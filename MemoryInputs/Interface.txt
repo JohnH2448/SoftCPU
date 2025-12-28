@@ -1,0 +1,19 @@
+
+Notes:
+
+- IMEM must have two outputs, DATA and VALID. VALID must
+be 1 only if DATA corresponds to the current PC. PC may
+change mid IMEM fetch, and VALID must not raise until the
+correct data arrives. In flight fetching must adapt to PC
+change and gate VALID respectively. 
+
+- DMEM LOADS function with the same VALID bit handshake as
+IMEM. Addresses will be asserted in the address register, and
+VALID must always be true only when the correct data is at port.
+DMEM LOAD, unlike IMEM, will not change address until VALID arrives
+
+- DMEM STORES take a VALID data bit to sample on, and a COMPLETE
+handshake on store completion. on VALID posedge, memory writes the data 
+in the data output port to the address in the address output port. 
+COMPLETE can be asserted early only if a next CPU cycle LOAD would
+fetch the newly stored data. 
