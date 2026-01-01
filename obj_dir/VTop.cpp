@@ -18,6 +18,8 @@ VTop::VTop(VerilatedContext* _vcontextp__, const char* _vcname__)
     , dbg_MEM_WB_Valid{vlSymsp->TOP.dbg_MEM_WB_Valid}
     , dbg_trap{vlSymsp->TOP.dbg_trap}
     , dbg_IMEM_valid{vlSymsp->TOP.dbg_IMEM_valid}
+    , forwardEnable1{vlSymsp->TOP.forwardEnable1}
+    , forwardEnable2{vlSymsp->TOP.forwardEnable2}
     , dbg_registers{vlSymsp->TOP.dbg_registers}
     , dbg_IF_ID_programCounter{vlSymsp->TOP.dbg_IF_ID_programCounter}
     , dbg_IF_ID_instruction{vlSymsp->TOP.dbg_IF_ID_instruction}
@@ -27,6 +29,8 @@ VTop::VTop(VerilatedContext* _vcontextp__, const char* _vcname__)
     , dbg_IMEM_data{vlSymsp->TOP.dbg_IMEM_data}
     , dbg_pc{vlSymsp->TOP.dbg_pc}
     , dbg_wb_value{vlSymsp->TOP.dbg_wb_value}
+    , forwardData1{vlSymsp->TOP.forwardData1}
+    , forwardData2{vlSymsp->TOP.forwardData2}
     , rootp{&(vlSymsp->TOP)}
 {
     // Register model with the context

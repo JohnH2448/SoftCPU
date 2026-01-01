@@ -19,7 +19,7 @@ int main(int argc, char **argv) {
     printf("SIM: starting execution\n");
 
     // run
-    for (int i = 0; i < 50; i++) {
+    for (int i = 0; i < 100; i++) {
         top.clock = 0; top.eval();
         top.clock = 1; top.eval();
         printf("\n\n");
@@ -44,6 +44,12 @@ int main(int argc, char **argv) {
         if (top.dbg_trap) {
             printf("TRAP encountered! Halting simulation.\n");
             break;
+        }
+        if (top.forwardEnable1) {
+            printf("Foreward Event: Data=%08x\n", top.forwardData1);
+        }
+        if (top.forwardEnable2) {
+            printf("Foreward Event: Data=%08x\n", top.forwardData2);
         }
         printf("\nRegisters:");
         for (int i = 0; i < 32; i++) {

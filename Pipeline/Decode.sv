@@ -16,8 +16,6 @@ module Decode (
     opcode_ opcode;
     decodeExecutePayload_ decodeExecuteCandidate;
     assign opcode = opcode_'(fetchDecodePayload.instruction[6:0]);
-    assign decodeExecuteCandidate.readAddress1 = readAddress1;
-    assign decodeExecuteCandidate.readAddress2 = readAddress2;
 
     always_comb begin
         decodeExecuteCandidate = '0;
@@ -176,6 +174,8 @@ module Decode (
                 decodeExecuteCandidate.illegal = 1'b1;
             end
         endcase
+        decodeExecuteCandidate.readAddress1 = readAddress1;
+        decodeExecuteCandidate.readAddress2 = readAddress2;
     end
     always_ff @(posedge clock) begin
         if (reset) begin
@@ -183,8 +183,13 @@ module Decode (
         end else if (decodeExecuteControl.flush) begin
             decodeExecutePayload.valid <= 1'b0;
         end else if (!decodeExecuteControl.stall) begin
-            decodeExecutePayload <= decodeExecuteCandidate;
-            decodeExecutePayload.valid <= fetchDecodePayload.valid;
+            if (fetchDecodePayload.instruction == '0) begin
+                decodeExecutePayload.valid <= 1'b0;
+                decodeExecutePayload <= '0;
+            end else begin
+                decodeExecutePayload <= decodeExecuteCandidate;
+                decodeExecutePayload.valid <= fetchDecodePayload.valid;
+            end
         end
     end
 endmodule

@@ -1,3 +1,5 @@
+import pack::*;
+
 module Forward (
     input logic [4:0] decodeExecuteRegister1,
     input logic [4:0] decodeExecuteRegister2,
@@ -62,3 +64,4 @@ module Forward (
     end
 
 endmodule
+// MUST DO FOREWARDING FOR BRANCH CHECKS IN EXECUTE STAGE

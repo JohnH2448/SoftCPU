@@ -20,7 +20,12 @@ module Top (
     output logic [31:0] dbg_IMEM_data,
     output logic dbg_IMEM_valid,
     output logic [31:0] dbg_pc,
-    output logic [31:0] dbg_wb_value
+    output logic [31:0] dbg_wb_value,
+
+    output logic forwardEnable1,
+    output logic forwardEnable2,
+    output logic [31:0] forwardData1,
+    output logic [31:0] forwardData2
 );
 
     // Debug Assignments
@@ -93,10 +98,7 @@ module Top (
     logic [31:0] writeData;
 
     // Forewarding Unit
-    logic forwardEnable1;
-    logic forwardEnable2;
-    logic [31:0] forwardData1;
-    logic [31:0] forwardData2;
+
 
     Forward forward (
         .decodeExecuteRegister1(decodeExecutePayload.readAddress1),

@@ -19,6 +19,7 @@ module Execute (
     logic [31:0] operand2;
     logic [31:0] result;
     logic redirectAsserted = 1'd0; // IMEM Latency Optimization
+    logic [31:0] brOp1, brOp2;
 
     always_comb begin
         branchValid = '0;
@@ -26,6 +27,8 @@ module Execute (
         operand2 = 32'd0;
         result = 32'd0;
         branchData = 32'd0;
+        brOp1 = forwardEnable1 ? forwardData1 : decodeExecutePayload.registerData1;
+        brOp2 = forwardEnable2 ? forwardData2 : decodeExecutePayload.registerData2;
         unique case (decodeExecutePayload.aluSource)
             default:;
             ALU_RS1_RS2: begin
@@ -72,13 +75,13 @@ module Execute (
         endcase
         if (decodeExecutePayload.valid && !executeMemoryControl.flush) begin
             unique case (decodeExecutePayload.branchType)
-                default:;
-                BR_EQ: branchValid = (decodeExecutePayload.registerData1 == decodeExecutePayload.registerData2);
-                BR_NE: branchValid = (decodeExecutePayload.registerData1 != decodeExecutePayload.registerData2);
-                BR_LT: branchValid = ($signed(decodeExecutePayload.registerData1) < $signed(decodeExecutePayload.registerData2));
-                BR_GE: branchValid = ($signed(decodeExecutePayload.registerData1) >= $signed(decodeExecutePayload.registerData2));
-                BR_LTU: branchValid = (decodeExecutePayload.registerData1 < decodeExecutePayload.registerData2);
-                BR_GEU: branchValid = (decodeExecutePayload.registerData1 >= decodeExecutePayload.registerData2);
+                BR_EQ:  branchValid = (brOp1 == brOp2);
+                BR_NE:  branchValid = (brOp1 != brOp2);
+                BR_LT:  branchValid = ($signed(brOp1) < $signed(brOp2));
+                BR_GE:  branchValid = ($signed(brOp1) >= $signed(brOp2));
+                BR_LTU: branchValid = (brOp1 < brOp2);
+                BR_GEU: branchValid = (brOp1 >= brOp2);
+                default: ;
             endcase
             unique case (decodeExecutePayload.jumpType)
                 default:;
@@ -122,7 +125,7 @@ module Execute (
             executeMemoryPayload.memoryWidth <= decodeExecutePayload.memoryWidth;
             executeMemoryPayload.memorySigned <= decodeExecutePayload.memorySigned;
             executeMemoryPayload.result <= result;
-            executeMemoryPayload.storeData <= decodeExecutePayload.registerData2;
+            executeMemoryPayload.storeData <= (forwardEnable2 ? forwardData2 : decodeExecutePayload.registerData2);
             executeMemoryPayload.writebackType <= decodeExecutePayload.writebackType;
             executeMemoryPayload.valid <= decodeExecutePayload.valid;
             executeMemoryPayload.illegal <= decodeExecutePayload.illegal;

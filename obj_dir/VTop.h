@@ -33,6 +33,8 @@ class alignas(VL_CACHE_LINE_BYTES) VTop VL_NOT_FINAL : public VerilatedModel {
     VL_OUT8(&dbg_MEM_WB_Valid,0,0);
     VL_OUT8(&dbg_trap,0,0);
     VL_OUT8(&dbg_IMEM_valid,0,0);
+    VL_OUT8(&forwardEnable1,0,0);
+    VL_OUT8(&forwardEnable2,0,0);
     VL_OUTW(&dbg_registers,1023,0,32);
     VL_OUT(&dbg_IF_ID_programCounter,31,0);
     VL_OUT(&dbg_IF_ID_instruction,31,0);
@@ -42,6 +44,8 @@ class alignas(VL_CACHE_LINE_BYTES) VTop VL_NOT_FINAL : public VerilatedModel {
     VL_OUT(&dbg_IMEM_data,31,0);
     VL_OUT(&dbg_pc,31,0);
     VL_OUT(&dbg_wb_value,31,0);
+    VL_OUT(&forwardData1,31,0);
+    VL_OUT(&forwardData2,31,0);
 
     // CELLS
     // Public to allow access to /* verilator public */ items.
