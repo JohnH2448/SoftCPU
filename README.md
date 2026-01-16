@@ -1,5 +1,6 @@
 # VenomCPU
 ## RISC-V RV32I Pipelined CPU Core in SystemVerilog
+### This is ~1-2 weeks from being verified. full docs will drop then
 ### Specifications:
 - In Order 5 Stage Pipeline
 - Variable Latency MEM Interface
