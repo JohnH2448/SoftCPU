@@ -73,11 +73,11 @@ package pack;
   } control;
 
   typedef enum logic [3:0] {
-    MSTATUS = 4'b0000, // x300 MRW Lots Here need to set MIE on exception
-    MEPC = 4'b0001, // x341 MRW Store PC of Trap Instruction. Set PC to This on MRET
-    MCAUSE = 4'b0010, // x342 MRW Cause of Last Trap. Set on Trap (specific preset values needed)
-    MTVAL = 4'b0011, // x343 MRW On Trap Immediately Set This to 0
-    MIE = 4'b0100, // x304 MRW Treat as Plain Reg but Mask Certain Bits (clarify)
+    MSTATUS = 4'b0000, // MRET sets this, Trap sets this, 
+    MEPC = 4'b0001, // DONE
+    MCAUSE = 4'b0010, // DONE
+    MTVAL = 4'b0011, // DONE
+    MIE = 4'b0100, // DONE
     MTVEC = 4'b0110, // DONE
     MSCRATCH = 4'b0111, // DONE
     MISA = 4'b1000, // DONE
@@ -85,7 +85,7 @@ package pack;
     MARCHID = 4'b1010, // DONE
     MIMPID = 4'b1011, // DONE
     MHARTID = 4'b1100, // DONE
-    MIP = 4'b1101, // x344 Readable. Writes are ignored BUT DONT TRAP
+    MIP = 4'b1101, // DONE
     MCYCLE = 4'b1110, // DONE
     MINSTRET = 4'b1111 // DONE
   } destinationCSR_;
@@ -124,6 +124,9 @@ package pack;
     jumpType_ jumpType;
     writebackType_ writebackType;
     decodeExecuteCSR_ decodeExecuteCSR;
+    logic ecall;
+    logic ebreak;
+    logic isMRET;
     logic illegal;
     logic valid;
   } decodeExecutePayload_;

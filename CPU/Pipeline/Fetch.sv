@@ -14,7 +14,8 @@ module Fetch (
     input logic controlReset,
     input logic [31:0] trapVector;
     output logic [31:0] instructionAddress,
-    output fetchDecodePayload_ fetchDecodePayload
+    output fetchDecodePayload_ fetchDecodePayload,
+    input logic mretSignal
 );
 
     logic [31:0] programCounter;
@@ -25,6 +26,8 @@ module Fetch (
             programCounter <= resetVector;
         end else if (controlReset) begin
             programCounter <= trapVector;
+        end else if (mretSignal) begin
+            programCounter <= branchData;
         end else begin
             if (branchValid) begin
                 programCounter <= branchData;

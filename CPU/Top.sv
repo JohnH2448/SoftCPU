@@ -65,6 +65,7 @@ module Top (
     control executeMemoryControl;
     control memoryWritebackControl;
     logic controlReset;
+    logic [3:0] mcause;
 
     // Register File
     logic [31:0] readData1;
@@ -81,12 +82,15 @@ module Top (
     decodeExecutePayload_ decodeExecutePayload;
     logic [4:0] readAddress1;
     logic [4:0] readAddress2;
+    logic ecall;
+    logic ebreak;
 
     // Execute Stage
     logic branchValid;
     logic [31:0] branchData;
     executeMemoryPayload_ executeMemoryPayload;
     destinationCSR_ readCSR;
+    logic mretSignal;
 
     // Memory Stage
     memoryWritebackPayload_ memoryWritebackPayload;
@@ -150,6 +154,11 @@ module Top (
         .readCSR(readCSR),
         .destinationCSR(destinationCSR),
         .csrDestinationEnable(csrDestinationEnable)
+        .controlReset(controlReset),
+        .mcause(mcause),
+        .decodeExecutePC(decodeExecutePayload.programCounter),
+        .executeMemoryPC(executeMemoryPayload.programCounter),
+        .memoryWritebackPC(memoryWritebackPayload.programCounter)
     );
 
     BranchPredictor branchPredictor (
@@ -180,6 +189,11 @@ module Top (
         .executeMemoryWritebackType(executeMemoryPayload.writebackType),
         .loadDataValid(loadDataValid),
         .executeMemoryIllegal(executeMemoryPayload.illegal)
+        .mcause(mcause),
+        .ebreak(decodeExecutePayload.ebreak),
+        .ecall(decodeExecutePayload.ecall),
+        .memoryReadEnable(executeMemoryPayload.memoryReadEnable),
+        .memoryWriteEnable(executeMemoryPayload.memoryWriteEnable)
     );
 
     Fetch fetch (
@@ -195,7 +209,8 @@ module Top (
         .branchPredictValid(branchPredictValid),
         .instructionAddress(instructionAddress),
         .fetchDecodePayload(fetchDecodePayload),
-        .controlReset(controlReset)
+        .controlReset(controlReset),
+        .mretSignal(mretSignal)
     );
 
     Decode decode (
@@ -208,7 +223,9 @@ module Top (
         .readAddress1(readAddress1),
         .readAddress2(readAddress2),
         .readData1(readData1),
-        .readData2(readData2)
+        .readData2(readData2),
+        .ecall(ecall),
+        .ebreak(ebreak)
     );
 
     RegisterFile registerFile (
@@ -241,7 +258,8 @@ module Top (
         .csrReadData(csrReadData),
         .destinationCSR(readCSR),
         .csrForwardEnable(csrForwardEnable),
-        .csrForwardData(csrForwardData)
+        .csrForwardData(csrForwardData),
+        .mretSignal(mretSignal)
     );
 
     Memory memory (

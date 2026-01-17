@@ -17,7 +17,8 @@ module Execute (
     output destinationCSR_ destinationCSR,
     input logic [31:0] csrReadData,
     input logic csrForwardEnable,
-    input logic [31:0] csrForwardData
+    input logic [31:0] csrForwardData,
+    output logic mretSignal
 );
 
     logic [31:0] operand1;
@@ -29,13 +30,15 @@ module Execute (
     logic [31:0] tempResult;
     logic [31:0] forwardCorrectedCSRReadData;
     logic illegal;
+    logic branchValid;
 
     assign gatedBranchValid = branchValid && !illegal;
 
-    always_comb begin
+    always_comb begin /// YOU MUST DO MRET WITH isMRET
         illegal = 1'b0;
         branchValid = '0;
         destinationCSR = MSTATUS;
+        mretSignal = 1'b0;
         tempResult = 32'd0;
         operand1 = 32'd0;
         operand2 = 32'd0;
@@ -45,7 +48,11 @@ module Execute (
         brOp1 = forwardEnable1 ? forwardData1 : decodeExecutePayload.registerData1;
         brOp2 = forwardEnable2 ? forwardData2 : decodeExecutePayload.registerData2;
         csrOperand = decodeExecutePayload.decodeExecuteCSR.CSRSrc ? brOp1 : {27'd0, decodeExecutePayload.decodeExecuteCSR.CSRImmediate};
-        if (decodeExecutePayload.decodeExecuteCSR.CSROp == CSR_NONE) begin
+        if (decodeExecutePayload.isMRET && decodeExecutePayload.valid && !decodeExecutePayload.illegal) begin
+            mretSignal = 1'd1;
+            destinationCSR = MEPC;
+            branchData <= forwardCorrectedCSRReadData;
+        end else if (decodeExecutePayload.decodeExecuteCSR.CSROp == CSR_NONE) begin
             unique case (decodeExecutePayload.aluSource)
                 default:;
                 ALU_RS1_RS2: begin
@@ -186,7 +193,11 @@ module Execute (
         end else if (!executeMemoryControl.stall) begin
             executeMemoryPayload.programCounter <= decodeExecutePayload.programCounter;
             executeMemoryPayload.programCounterPlus4 <= decodeExecutePayload.programCounterPlus4;
-            executeMemoryPayload.destinationRegister <= decodeExecutePayload.destinationRegister;
+            if (decodeExecutePayload.isMRET) begin
+                executeMemoryPayload.destinationRegister <= '0;
+            end else begin
+                executeMemoryPayload.destinationRegister <= decodeExecutePayload.destinationRegister;
+            end
             executeMemoryPayload.memoryReadEnable <= decodeExecutePayload.memoryReadEnable;
             executeMemoryPayload.memoryWriteEnable <= decodeExecutePayload.memoryWriteEnable;
             executeMemoryPayload.memoryWidth <= decodeExecutePayload.memoryWidth;

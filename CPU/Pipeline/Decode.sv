@@ -49,7 +49,11 @@ module Decode (
                 endcase
             end // R-type   (reg–reg ALU)
             OPCODE_MISC_MEM: begin 
-                // NOP for in order pipeliens
+                unique case (fetchDecodePayload.instruction[14:12])
+                    3'b000: // nop
+                    3'b001: // nop
+                    default: decodeExecuteCandidate.illegal = 1'b1;
+                endcase
             end // I-type   (FENCE / FENCE.I)
             OPCODE_ALU_IMM: begin 
                 decodeExecuteCandidate.destinationRegister = fetchDecodePayload.instruction[11:7];
@@ -249,7 +253,15 @@ module Decode (
                     if (decodeExecuteCandidate.decodeExecuteCSR.CSRWriteIntent && ro) begin
                         decodeExecuteCandidate.illegal = 1'b1;
                     end
-                end // Other system instructions to be added. no error here
+                end else begin
+                    unique case (fetchDecodePayload.instruction)
+                        32'h00000073: decodeExecuteCandidate.ecall = 1;
+                        32'h00100073: decodeExecuteCandidate.ebreak = 1;
+                        32'h30200073: decodeExecuteCandidate.isMRET = 1;
+                        32'h10500073: ; // NOP
+                        default: decodeExecuteCandidate.illegal = 1;
+                    endcase
+                end
             end // I-type   (CSR / ECALL / EBREAK / MRET / WFI (NOP))
             default: begin
                 decodeExecuteCandidate.illegal = 1'b1;
@@ -264,13 +276,8 @@ module Decode (
         end else if (decodeExecuteControl.flush) begin
             decodeExecutePayload.valid <= 1'b0;
         end else if (!decodeExecuteControl.stall) begin
-            if (fetchDecodePayload.instruction == '0) begin
-                decodeExecutePayload.valid <= 1'b0;
-                decodeExecutePayload <= '0;
-            end else begin
-                decodeExecutePayload <= decodeExecuteCandidate;
-                decodeExecutePayload.valid <= fetchDecodePayload.valid;
-            end
+            decodeExecutePayload <= decodeExecuteCandidate;
+            decodeExecutePayload.valid <= fetchDecodePayload.valid;
         end
     end
 endmodule
