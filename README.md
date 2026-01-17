@@ -2,6 +2,7 @@
 ## RISC-V RV32I Pipelined CPU Core in SystemVerilog
 ### This is ~1-2 weeks from being verified. full docs will drop then!
 ### Free to use, just email me at jch0100@uah.edu
+### README is very unpolished 
 ### DO NOT USE prototype versions. they are not verified
 ### Specifications:
 - In-Order 5-Stage Pipeline
@@ -26,3 +27,6 @@
 | MIP       | MRW    | Writes Ignored But Don't Trap         |
 | MCYCLE    | MRW    | Writes Override Hardware Incriments   |
 | MINSTRET  | MRW    | Writes Override Hardware Incriments   |
+
+Pipeline Diagram: 
+<img width="744" height="567" alt="image" src="https://github.com/user-attachments/assets/64defca3-998c-4ff6-a73f-742df615bb44" />
