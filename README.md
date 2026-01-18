@@ -29,4 +29,4 @@
 | MINSTRET  | MRW    | Writes Override Hardware Incriments   |
 
 Pipeline Diagram: 
-<img width="744" height="567" alt="image" src="https://github.com/user-attachments/assets/64defca3-998c-4ff6-a73f-742df615bb44" />
+
