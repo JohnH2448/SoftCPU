@@ -38,6 +38,7 @@ class alignas(VL_CACHE_LINE_BYTES) VTop___024root final : public VerilatedModule
         CData/*3:0*/ Top__DOT__mcause;
         CData/*4:0*/ Top__DOT__readAddress1;
         CData/*4:0*/ Top__DOT__readAddress2;
+        CData/*0:0*/ Top__DOT__decodeCombIllegal;
         CData/*0:0*/ Top__DOT__branchValid;
         CData/*3:0*/ Top__DOT__readCSR;
         CData/*0:0*/ Top__DOT__mretSignal;
@@ -79,9 +80,9 @@ class alignas(VL_CACHE_LINE_BYTES) VTop___024root final : public VerilatedModule
         VL_OUTW(dbg_registers,1023,0,32);
         VL_OUT(dbg_IF_ID_programCounter,31,0);
         VL_OUT(dbg_IF_ID_instruction,31,0);
-        VL_OUT(dbg_ID_EX_programCounter,31,0);
     };
     struct {
+        VL_OUT(dbg_ID_EX_programCounter,31,0);
         VL_OUT(dbg_EX_MEM_programCounter,31,0);
         VL_OUT(dbg_MEM_WB_programCounter,31,0);
         VL_OUT(dbg_IMEM_data,31,0);

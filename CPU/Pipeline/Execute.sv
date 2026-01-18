@@ -84,6 +84,7 @@ module Execute (
                     operand2 = decodeExecutePayload.immediate;
                 end
             endcase
+
             unique case (decodeExecutePayload.aluOperation)
                 default:;
                 ALU_ADD: result = operand1 + operand2;
@@ -130,9 +131,6 @@ module Execute (
             if (redirectAsserted) begin
                 branchValid = 1'd0;
             end
-            $display("ALU op1=%08h op2=%08h (src=%0d)", operand1, operand2, decodeExecutePayload.aluSource);
-            $display("BR  op1=%08h op2=%08h (bt=%0d jt=%0d)", brOp1, brOp2,
-                    decodeExecutePayload.branchType, decodeExecutePayload.jumpType);
         end else begin
             destinationCSR = decodeExecutePayload.decodeExecuteCSR.destinationCSR;
             unique case (decodeExecutePayload.decodeExecuteCSR.CSROp)

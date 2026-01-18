@@ -51,14 +51,12 @@ module Forward (
                         else forwardData1 = 32'd0;
                     end
                 endcase
-                $display("Forward Rs1 from EX/MEM. Value: ", forwardData1);
             end else if (memoryWritebackValid &&
                         memoryWritebackWritebackEnable &&
                         (memoryWritebackDestinationRegister != 5'd0) &&
                         (decodeExecuteRegister1 == memoryWritebackDestinationRegister)) begin
                 forwardEnable1 = 1'b1;
                 forwardData1 = memoryWritebackData;
-                $display("Forward Rs1 from MEM/WB. Value: ", forwardData1);
             end
         end
         if (decodeExecuteRegister2 != 5'd0) begin
@@ -75,14 +73,12 @@ module Forward (
                         else forwardData2 = 32'd0;
                     end
                 endcase
-                $display("Forward Rs2 from EX/MEM. Value: ", forwardData2);
             end else if (memoryWritebackValid &&
                         memoryWritebackWritebackEnable &&
                         (memoryWritebackDestinationRegister != 5'd0) &&
                         (decodeExecuteRegister2 == memoryWritebackDestinationRegister)) begin
                 forwardEnable2 = 1'b1;
                 forwardData2 = memoryWritebackData;
-                $display("Forward Rs2 from MEM/WB. Value: ", forwardData2);
             end
         end
         if ((decodeExecuteDestinationCSR == executeMemoryDestinationCSR) && executeMemoryCSRWriteIntent && executeMemoryValid) begin

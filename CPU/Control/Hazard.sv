@@ -27,7 +27,13 @@ module Hazard (
     input logic ecall,
     input logic memoryReadEnable,
     input logic memoryWriteEnable,
-    input logic mretSignal
+    input logic mretSignal,
+    input logic readAddress1,
+    input logic readAddress2,
+    input logic decodeCombIllegal,
+    input logic fetchDecodeValid,
+    input writebackType_ decodeExecuteWBType,
+    input logic [4:0] decodeExecuteDestinationRegister
 );
     // Trap Handler
     always_comb begin
@@ -92,18 +98,15 @@ module Hazard (
                 decodeExecuteControl.stall = 1'b1;
                 executeMemoryControl.stall = 1'b1;
                 memoryWritebackControl.stall = 1'b1;
-            end
-            // Load-Use Hazard
-            if (loadDataValid) begin
-                if (decodeExecuteValid && (decodeExecuteRegister1 != 5'd0) && (decodeExecuteRegister1 == executeMemoryDestinationRegister) && executeMemoryValid && (executeMemoryWritebackType == WB_MEM)) begin
+            end else begin
+                // Load-Use Hazard 2
+                if ((decodeExecuteDestinationRegister != 5'd0) && (readAddress1 != 5'd0) && decodeExecuteValid && fetchDecodeValid && !decodeCombIllegal && (decodeExecuteDestinationRegister == readAddress1) && (decodeExecuteWBType == WB_MEM)) begin
                     fetchDecodeControl.stall = 1'b1;
-                    decodeExecuteControl.stall = 1'b1;
-                    executeMemoryControl.flush = 1'b1;
+                    decodeExecuteControl.flush = 1'b1;
                 end
-                if (decodeExecuteValid && (decodeExecuteRegister2 != 5'd0) && (decodeExecuteRegister2 == executeMemoryDestinationRegister) && executeMemoryValid && (executeMemoryWritebackType == WB_MEM)) begin
+                if ((decodeExecuteDestinationRegister != 5'd0) && (readAddress2 != 5'd0) && decodeExecuteValid && fetchDecodeValid && !decodeCombIllegal && (decodeExecuteDestinationRegister == readAddress2) && (decodeExecuteWBType == WB_MEM)) begin
                     fetchDecodeControl.stall = 1'b1;
-                    decodeExecuteControl.stall = 1'b1;
-                    executeMemoryControl.flush = 1'b1;
+                    decodeExecuteControl.flush = 1'b1;
                 end
             end
         end

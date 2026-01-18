@@ -83,6 +83,7 @@ module Top (
     decodeExecutePayload_ decodeExecutePayload;
     logic [4:0] readAddress1;
     logic [4:0] readAddress2;
+    logic decodeCombIllegal;
 
     // Execute Stage
     logic branchValid;
@@ -195,7 +196,13 @@ module Top (
         .ecall(decodeExecutePayload.ecall),
         .memoryReadEnable(memoryWritebackPayload.memoryReadEnable),
         .memoryWriteEnable(memoryWritebackPayload.memoryWriteEnable),
-        .mretSignal(mretSignal)
+        .mretSignal(mretSignal),
+        .readAddress1(readAddress1),
+        .readAddress2(readAddress2),
+        .decodeCombIllegal(decodeCombIllegal),
+        .fetchDecodeValid(fetchDecodePayload.valid),
+        .decodeExecuteWBType(decodeExecutePayload.writebackType),
+        .decodeExecuteDestinationRegister(decodeExecutePayload.destinationRegister)
     );
 
     Fetch fetch (
@@ -226,7 +233,8 @@ module Top (
         .readAddress1(readAddress1),
         .readAddress2(readAddress2),
         .readData1(readData1),
-        .readData2(readData2)
+        .readData2(readData2),
+        .decodeCombIllegal(decodeCombIllegal)
     );
 
     RegisterFile registerFile (

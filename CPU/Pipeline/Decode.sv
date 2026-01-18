@@ -10,7 +10,8 @@ module Decode (
     output logic [4:0] readAddress1,
     output logic [4:0] readAddress2,
     input logic [31:0] readData1,
-    input logic [31:0] readData2
+    input logic [31:0] readData2,
+    output logic decodeCombIllegal
 );
 
     opcode_ opcode;
@@ -27,6 +28,7 @@ module Decode (
         decodeExecuteCandidate.registerData2 = readData2;
         decodeExecuteCandidate.programCounter = fetchDecodePayload.programCounter;
         decodeExecuteCandidate.programCounterPlus4 = fetchDecodePayload.programCounterPlus4;
+        decodeCombIllegal = decodeExecuteCandidate.illegal;
         unique case (opcode)
             OPCODE_ALU_REG: begin 
                 decodeExecuteCandidate.destinationRegister = fetchDecodePayload.instruction[11:7];
@@ -278,9 +280,6 @@ module Decode (
         end else if (!decodeExecuteControl.stall) begin
             decodeExecutePayload <= decodeExecuteCandidate;
             decodeExecutePayload.valid <= fetchDecodePayload.valid;
-        end else begin
-            decodeExecutePayload.registerData1 <= decodeExecuteCandidate.registerData1;
-            decodeExecutePayload.registerData2 <= decodeExecuteCandidate.registerData2;
         end
     end
 endmodule
