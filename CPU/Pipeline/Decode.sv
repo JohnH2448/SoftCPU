@@ -278,6 +278,9 @@ module Decode (
         end else if (!decodeExecuteControl.stall) begin
             decodeExecutePayload <= decodeExecuteCandidate;
             decodeExecutePayload.valid <= fetchDecodePayload.valid;
+        end else begin
+            decodeExecutePayload.registerData1 <= decodeExecuteCandidate.registerData1;
+            decodeExecutePayload.registerData2 <= decodeExecuteCandidate.registerData2;
         end
     end
 endmodule

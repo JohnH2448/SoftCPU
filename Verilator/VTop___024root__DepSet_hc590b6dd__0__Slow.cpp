@@ -18,16 +18,22 @@ VL_ATTR_COLD void VTop___024root___eval_triggers__stl(VTop___024root* vlSelf) {
     vlSelf->__VstlTriggered.set(0U, (IData)(vlSelf->__VstlFirstIteration));
     vlSelf->__VstlTriggered.set(1U, ((IData)(vlSelf->Top__DOT__readCSR) 
                                      != (IData)(vlSelf->__Vtrigprevexpr___TOP__Top__DOT__readCSR__0)));
-    vlSelf->__VstlTriggered.set(2U, ((IData)(vlSelf->Top__DOT__memoryWritebackControl) 
-                                     != (IData)(vlSelf->__Vtrigprevexpr___TOP__Top__DOT__memoryWritebackControl__0)));
-    vlSelf->__VstlTriggered.set(3U, ((IData)(vlSelf->Top__DOT__readAddress1) 
+    vlSelf->__VstlTriggered.set(2U, (((IData)(vlSelf->Top__DOT__mretSignal) 
+                                      != (IData)(vlSelf->__Vtrigprevexpr___TOP__Top__DOT__mretSignal__0)) 
+                                     | ((IData)(vlSelf->Top__DOT__stallControl) 
+                                        != (IData)(vlSelf->__Vtrigprevexpr___TOP__Top__DOT__stallControl__0))));
+    vlSelf->__VstlTriggered.set(3U, ((IData)(vlSelf->Top__DOT__stallControl) 
+                                     != (IData)(vlSelf->__Vtrigprevexpr___TOP__Top__DOT__stallControl__0)));
+    vlSelf->__VstlTriggered.set(4U, ((IData)(vlSelf->Top__DOT__readAddress1) 
                                      != (IData)(vlSelf->__Vtrigprevexpr___TOP__Top__DOT__readAddress1__0)));
-    vlSelf->__VstlTriggered.set(4U, ((IData)(vlSelf->Top__DOT__readAddress2) 
+    vlSelf->__VstlTriggered.set(5U, ((IData)(vlSelf->Top__DOT__readAddress2) 
                                      != (IData)(vlSelf->__Vtrigprevexpr___TOP__Top__DOT__readAddress2__0)));
     vlSelf->__Vtrigprevexpr___TOP__Top__DOT__readCSR__0 
         = vlSelf->Top__DOT__readCSR;
-    vlSelf->__Vtrigprevexpr___TOP__Top__DOT__memoryWritebackControl__0 
-        = vlSelf->Top__DOT__memoryWritebackControl;
+    vlSelf->__Vtrigprevexpr___TOP__Top__DOT__mretSignal__0 
+        = vlSelf->Top__DOT__mretSignal;
+    vlSelf->__Vtrigprevexpr___TOP__Top__DOT__stallControl__0 
+        = vlSelf->Top__DOT__stallControl;
     vlSelf->__Vtrigprevexpr___TOP__Top__DOT__readAddress1__0 
         = vlSelf->Top__DOT__readAddress1;
     vlSelf->__Vtrigprevexpr___TOP__Top__DOT__readAddress2__0 
@@ -38,6 +44,7 @@ VL_ATTR_COLD void VTop___024root___eval_triggers__stl(VTop___024root* vlSelf) {
         vlSelf->__VstlTriggered.set(2U, 1U);
         vlSelf->__VstlTriggered.set(3U, 1U);
         vlSelf->__VstlTriggered.set(4U, 1U);
+        vlSelf->__VstlTriggered.set(5U, 1U);
     }
 #ifdef VL_DEBUG
     if (VL_UNLIKELY(vlSymsp->_vm_contextp__->debug())) {

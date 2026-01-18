@@ -33,18 +33,24 @@ VL_ATTR_COLD void VTop___024root___eval_initial(VTop___024root* vlSelf) {
     VTop___024root___eval_initial__TOP(vlSelf);
     vlSelf->__Vtrigprevexpr___TOP__Top__DOT__readCSR__0 
         = vlSelf->Top__DOT__readCSR;
-    vlSelf->__Vtrigprevexpr___TOP__Top__DOT__memoryWritebackControl__0 
-        = vlSelf->Top__DOT__memoryWritebackControl;
+    vlSelf->__Vtrigprevexpr___TOP__Top__DOT__mretSignal__0 
+        = vlSelf->Top__DOT__mretSignal;
+    vlSelf->__Vtrigprevexpr___TOP__Top__DOT__stallControl__0 
+        = vlSelf->Top__DOT__stallControl;
     vlSelf->__Vtrigprevexpr___TOP__Top__DOT__readAddress1__0 
         = vlSelf->Top__DOT__readAddress1;
     vlSelf->__Vtrigprevexpr___TOP__Top__DOT__readAddress2__0 
         = vlSelf->Top__DOT__readAddress2;
-    vlSelf->__Vtrigprevexpr___TOP__Top__DOT__memoryWritebackControl__1 
-        = vlSelf->Top__DOT__memoryWritebackControl;
+    vlSelf->__Vtrigprevexpr___TOP__Top__DOT__mretSignal__1 
+        = vlSelf->Top__DOT__mretSignal;
+    vlSelf->__Vtrigprevexpr___TOP__Top__DOT__stallControl__1 
+        = vlSelf->Top__DOT__stallControl;
     vlSelf->__Vtrigprevexpr___TOP__Top__DOT__readCSR__1 
         = vlSelf->Top__DOT__readCSR;
-    vlSelf->__Vtrigprevexpr___TOP__Top__DOT__memoryWritebackControl__2 
-        = vlSelf->Top__DOT__memoryWritebackControl;
+    vlSelf->__Vtrigprevexpr___TOP__Top__DOT__mretSignal__2 
+        = vlSelf->Top__DOT__mretSignal;
+    vlSelf->__Vtrigprevexpr___TOP__Top__DOT__stallControl__2 
+        = vlSelf->Top__DOT__stallControl;
     vlSelf->__Vtrigprevexpr___TOP__Top__DOT__readAddress1__1 
         = vlSelf->Top__DOT__readAddress1;
     vlSelf->__Vtrigprevexpr___TOP__Top__DOT__readAddress2__1 
@@ -128,13 +134,16 @@ VL_ATTR_COLD void VTop___024root___dump_triggers__stl(VTop___024root* vlSelf) {
         VL_DBG_MSGF("         'stl' region trigger index 1 is active: @([hybrid] Top.readCSR)\n");
     }
     if ((4ULL & vlSelf->__VstlTriggered.word(0U))) {
-        VL_DBG_MSGF("         'stl' region trigger index 2 is active: @([hybrid] Top.memoryWritebackControl)\n");
+        VL_DBG_MSGF("         'stl' region trigger index 2 is active: @([hybrid] Top.mretSignal or [hybrid] Top.stallControl)\n");
     }
     if ((8ULL & vlSelf->__VstlTriggered.word(0U))) {
-        VL_DBG_MSGF("         'stl' region trigger index 3 is active: @([hybrid] Top.readAddress1)\n");
+        VL_DBG_MSGF("         'stl' region trigger index 3 is active: @([hybrid] Top.stallControl)\n");
     }
     if ((0x10ULL & vlSelf->__VstlTriggered.word(0U))) {
-        VL_DBG_MSGF("         'stl' region trigger index 4 is active: @([hybrid] Top.readAddress2)\n");
+        VL_DBG_MSGF("         'stl' region trigger index 4 is active: @([hybrid] Top.readAddress1)\n");
+    }
+    if ((0x20ULL & vlSelf->__VstlTriggered.word(0U))) {
+        VL_DBG_MSGF("         'stl' region trigger index 5 is active: @([hybrid] Top.readAddress2)\n");
     }
 }
 #endif  // VL_DEBUG
@@ -378,10 +387,6 @@ VL_ATTR_COLD void VTop___024root___stl_sequent__TOP__0(VTop___024root* vlSelf) {
                                                                            [0x1eU]))) 
                                                         >> 0x20U));
     vlSelf->dbg_pc = vlSelf->Top__DOT__fetch__DOT__programCounter;
-    vlSelf->Top__DOT__mretSignal = 0U;
-    if ((IData)((5U == (7U & vlSelf->Top__DOT__decodeExecutePayload[0U])))) {
-        vlSelf->Top__DOT__mretSignal = 1U;
-    }
     vlSelf->dbg_ID_EX_Valid = (1U & vlSelf->Top__DOT__decodeExecutePayload[0U]);
     vlSelf->Top__DOT__loadDataValid = (1U & (~ (IData)(vlSelf->reset)));
     vlSelf->dbg_EX_MEM_Valid = (1U & (vlSelf->Top__DOT__executeMemoryPayload[1U] 
@@ -422,68 +427,35 @@ VL_ATTR_COLD void VTop___024root___stl_sequent__TOP__0(VTop___024root* vlSelf) {
     vlSelf->dbg_registers[0x1fU] = vlSelf->Top__DOT__debug_regs_flat[0x1fU];
     vlSelf->Top__DOT__instructionDataValid = 0U;
     vlSelf->Top__DOT__instructionData = 0x13U;
-    vlSelf->Top__DOT__mcause = 0U;
-    vlSelf->Top__DOT__controlReset = 0U;
     if ((1U & (~ (IData)(vlSelf->reset)))) {
         if ((0U == (3U & vlSelf->dbg_pc))) {
             vlSelf->Top__DOT__instructionDataValid = 1U;
             vlSelf->Top__DOT__instructionData = vlSelf->Top__DOT__imem_inst__DOT__mem
                 [(0x3fffU & (vlSelf->dbg_pc >> 2U))];
         }
-        if (((IData)(vlSelf->dbg_MEM_WB_Valid) & (vlSelf->Top__DOT__memoryWritebackPayload[1U] 
-                                                  >> 8U))) {
-            if ((0x800U & vlSelf->Top__DOT__memoryWritebackPayload[1U])) {
-                vlSelf->Top__DOT__mcause = 4U;
-            } else if ((0x400U & vlSelf->Top__DOT__memoryWritebackPayload[1U])) {
-                vlSelf->Top__DOT__mcause = 6U;
-            }
-            vlSelf->Top__DOT__controlReset = 1U;
-        } else if (((IData)(vlSelf->dbg_EX_MEM_Valid) 
-                    & (vlSelf->Top__DOT__executeMemoryPayload[1U] 
-                       >> 8U))) {
-            vlSelf->Top__DOT__mcause = 0U;
-            vlSelf->Top__DOT__controlReset = 1U;
-        } else if ((1U & (~ (IData)(vlSelf->Top__DOT__mretSignal)))) {
-            if (((IData)(vlSelf->dbg_ID_EX_Valid) & 
-                 (vlSelf->Top__DOT__decodeExecutePayload[0U] 
-                  >> 1U))) {
-                vlSelf->Top__DOT__mcause = 2U;
-                vlSelf->Top__DOT__controlReset = 1U;
-            } else if (((IData)(vlSelf->dbg_ID_EX_Valid) 
-                        & (vlSelf->Top__DOT__decodeExecutePayload[0U] 
-                           >> 4U))) {
-                vlSelf->Top__DOT__mcause = 0xbU;
-                vlSelf->Top__DOT__controlReset = 1U;
-            } else if (((IData)(vlSelf->dbg_ID_EX_Valid) 
-                        & (vlSelf->Top__DOT__decodeExecutePayload[0U] 
-                           >> 3U))) {
-                vlSelf->Top__DOT__mcause = 3U;
-                vlSelf->Top__DOT__controlReset = 1U;
-            }
-        }
     }
-    vlSelf->Top__DOT__csrForwardData = 0U;
     vlSelf->Top__DOT__csrForwardEnable = 0U;
+    vlSelf->Top__DOT__csrForwardData = 0U;
     if (((((0xfU & (vlSelf->Top__DOT__decodeExecutePayload[0U] 
                     >> 0xcU)) == (0xfU & (vlSelf->Top__DOT__executeMemoryPayload[1U] 
                                           >> 3U))) 
           & vlSelf->Top__DOT__executeMemoryPayload[0U]) 
          & (IData)(vlSelf->dbg_EX_MEM_Valid))) {
+        vlSelf->Top__DOT__csrForwardEnable = 1U;
         vlSelf->Top__DOT__csrForwardData = ((vlSelf->Top__DOT__executeMemoryPayload[3U] 
                                              << 0x14U) 
                                             | (vlSelf->Top__DOT__executeMemoryPayload[2U] 
                                                >> 0xcU));
-        vlSelf->Top__DOT__csrForwardEnable = 1U;
     } else if (((((0xfU & (vlSelf->Top__DOT__decodeExecutePayload[0U] 
                            >> 0xcU)) == (0xfU & (vlSelf->Top__DOT__memoryWritebackPayload[1U] 
                                                  >> 3U))) 
                  & vlSelf->Top__DOT__memoryWritebackPayload[0U]) 
                 & (IData)(vlSelf->dbg_MEM_WB_Valid))) {
+        vlSelf->Top__DOT__csrForwardEnable = 1U;
         vlSelf->Top__DOT__csrForwardData = ((vlSelf->Top__DOT__memoryWritebackPayload[2U] 
                                              << 0x14U) 
                                             | (vlSelf->Top__DOT__memoryWritebackPayload[1U] 
                                                >> 0xcU));
-        vlSelf->Top__DOT__csrForwardEnable = 1U;
     }
     vlSelf->Top__DOT__dualValid = ((~ (vlSelf->Top__DOT__memoryWritebackPayload[1U] 
                                        >> 8U)) & (IData)(vlSelf->dbg_MEM_WB_Valid));
@@ -496,7 +468,6 @@ VL_ATTR_COLD void VTop___024root___stl_sequent__TOP__0(VTop___024root* vlSelf) {
         vlSelf->Top__DOT__destinationEnable = vlSelf->Top__DOT__dualValid;
         vlSelf->dbg_IMEM_valid = vlSelf->Top__DOT__instructionDataValid;
         vlSelf->dbg_IMEM_data = vlSelf->Top__DOT__instructionData;
-        vlSelf->dbg_trap = vlSelf->Top__DOT__controlReset;
         vlSelf->Top__DOT__csrDestinationEnable = ((IData)(vlSelf->Top__DOT__dualValid) 
                                                   & vlSelf->Top__DOT__memoryWritebackPayload[0U]);
     } else {
@@ -512,7 +483,6 @@ VL_ATTR_COLD void VTop___024root___stl_sequent__TOP__0(VTop___024root* vlSelf) {
                                                            & vlSelf->Top__DOT__memoryWritebackPayload[1U]))));
         vlSelf->dbg_IMEM_valid = vlSelf->Top__DOT__instructionDataValid;
         vlSelf->dbg_IMEM_data = vlSelf->Top__DOT__instructionData;
-        vlSelf->dbg_trap = vlSelf->Top__DOT__controlReset;
         vlSelf->Top__DOT__csrDestinationEnable = 0U;
     }
     vlSelf->dbg_wb_value = ((IData)(vlSelf->Top__DOT__destinationEnable)
@@ -520,25 +490,25 @@ VL_ATTR_COLD void VTop___024root___stl_sequent__TOP__0(VTop___024root* vlSelf) {
                                  << 0x14U) | (vlSelf->Top__DOT__memoryWritebackPayload[1U] 
                                               >> 0xcU))
                              : 0U);
-    vlSelf->forwardEnable2 = 0U;
     vlSelf->forwardEnable1 = 0U;
+    vlSelf->forwardEnable2 = 0U;
     vlSelf->forwardData1 = 0U;
+    vlSelf->forwardData2 = 0U;
     if ((0U != (0x1fU & (vlSelf->Top__DOT__decodeExecutePayload[2U] 
                          >> 0xfU)))) {
-        if (((((IData)(vlSelf->dbg_EX_MEM_Valid) & 
-               (((0U != (7U & (vlSelf->Top__DOT__executeMemoryPayload[1U] 
-                               >> 9U))) & (2U != (7U 
-                                                  & (vlSelf->Top__DOT__executeMemoryPayload[1U] 
-                                                     >> 9U)))) 
-                | (0U != (3U & (vlSelf->Top__DOT__executeMemoryPayload[0U] 
-                                >> 1U))))) & (0U != 
-                                              (0x1fU 
-                                               & (vlSelf->Top__DOT__executeMemoryPayload[3U] 
-                                                  >> 0x11U)))) 
-             & ((0x1fU & (vlSelf->Top__DOT__decodeExecutePayload[2U] 
-                          >> 0xfU)) == (0x1fU & (vlSelf->Top__DOT__executeMemoryPayload[3U] 
-                                                 >> 0x11U))))) {
-            vlSelf->forwardEnable1 = 1U;
+        if (VL_UNLIKELY(((((IData)(vlSelf->dbg_EX_MEM_Valid) 
+                           & (((0U != (7U & (vlSelf->Top__DOT__executeMemoryPayload[1U] 
+                                             >> 9U))) 
+                               & (2U != (7U & (vlSelf->Top__DOT__executeMemoryPayload[1U] 
+                                               >> 9U)))) 
+                              | (0U != (3U & (vlSelf->Top__DOT__executeMemoryPayload[0U] 
+                                              >> 1U))))) 
+                          & (0U != (0x1fU & (vlSelf->Top__DOT__executeMemoryPayload[3U] 
+                                             >> 0x11U)))) 
+                         & ((0x1fU & (vlSelf->Top__DOT__decodeExecutePayload[2U] 
+                                      >> 0xfU)) == 
+                            (0x1fU & (vlSelf->Top__DOT__executeMemoryPayload[3U] 
+                                      >> 0x11U)))))) {
             vlSelf->forwardData1 = ((1U == (7U & (vlSelf->Top__DOT__executeMemoryPayload[1U] 
                                                   >> 9U)))
                                      ? ((vlSelf->Top__DOT__executeMemoryPayload[3U] 
@@ -561,35 +531,39 @@ VL_ATTR_COLD void VTop___024root___stl_sequent__TOP__0(VTop___024root* vlSelf) {
                                                 | (vlSelf->Top__DOT__executeMemoryPayload[0U] 
                                                    >> 3U))
                                              : 0U)));
-        } else if (((((IData)(vlSelf->dbg_MEM_WB_Valid) 
-                      & (IData)(vlSelf->Top__DOT__destinationEnable)) 
-                     & (0U != (0x1fU & (vlSelf->Top__DOT__memoryWritebackPayload[2U] 
-                                        >> 0xcU)))) 
-                    & ((0x1fU & (vlSelf->Top__DOT__decodeExecutePayload[2U] 
-                                 >> 0xfU)) == (0x1fU 
-                                               & (vlSelf->Top__DOT__memoryWritebackPayload[2U] 
-                                                  >> 0xcU))))) {
             vlSelf->forwardEnable1 = 1U;
+            VL_WRITEF("Forward Rs1 from EX/MEM. Value: %10#\n",
+                      32,vlSelf->forwardData1);
+        } else if (VL_UNLIKELY(((((IData)(vlSelf->dbg_MEM_WB_Valid) 
+                                  & (IData)(vlSelf->Top__DOT__destinationEnable)) 
+                                 & (0U != (0x1fU & 
+                                           (vlSelf->Top__DOT__memoryWritebackPayload[2U] 
+                                            >> 0xcU)))) 
+                                & ((0x1fU & (vlSelf->Top__DOT__decodeExecutePayload[2U] 
+                                             >> 0xfU)) 
+                                   == (0x1fU & (vlSelf->Top__DOT__memoryWritebackPayload[2U] 
+                                                >> 0xcU)))))) {
             vlSelf->forwardData1 = vlSelf->Top__DOT__writeData;
+            vlSelf->forwardEnable1 = 1U;
+            VL_WRITEF("Forward Rs1 from MEM/WB. Value: %10#\n",
+                      32,vlSelf->forwardData1);
         }
     }
-    vlSelf->forwardData2 = 0U;
     if ((0U != (0x1fU & (vlSelf->Top__DOT__decodeExecutePayload[2U] 
                          >> 0xaU)))) {
-        if (((((IData)(vlSelf->dbg_EX_MEM_Valid) & 
-               (((0U != (7U & (vlSelf->Top__DOT__executeMemoryPayload[1U] 
-                               >> 9U))) & (2U != (7U 
-                                                  & (vlSelf->Top__DOT__executeMemoryPayload[1U] 
-                                                     >> 9U)))) 
-                | (0U != (3U & (vlSelf->Top__DOT__executeMemoryPayload[0U] 
-                                >> 1U))))) & (0U != 
-                                              (0x1fU 
-                                               & (vlSelf->Top__DOT__executeMemoryPayload[3U] 
-                                                  >> 0x11U)))) 
-             & ((0x1fU & (vlSelf->Top__DOT__decodeExecutePayload[2U] 
-                          >> 0xaU)) == (0x1fU & (vlSelf->Top__DOT__executeMemoryPayload[3U] 
-                                                 >> 0x11U))))) {
-            vlSelf->forwardEnable2 = 1U;
+        if (VL_UNLIKELY(((((IData)(vlSelf->dbg_EX_MEM_Valid) 
+                           & (((0U != (7U & (vlSelf->Top__DOT__executeMemoryPayload[1U] 
+                                             >> 9U))) 
+                               & (2U != (7U & (vlSelf->Top__DOT__executeMemoryPayload[1U] 
+                                               >> 9U)))) 
+                              | (0U != (3U & (vlSelf->Top__DOT__executeMemoryPayload[0U] 
+                                              >> 1U))))) 
+                          & (0U != (0x1fU & (vlSelf->Top__DOT__executeMemoryPayload[3U] 
+                                             >> 0x11U)))) 
+                         & ((0x1fU & (vlSelf->Top__DOT__decodeExecutePayload[2U] 
+                                      >> 0xaU)) == 
+                            (0x1fU & (vlSelf->Top__DOT__executeMemoryPayload[3U] 
+                                      >> 0x11U)))))) {
             vlSelf->forwardData2 = ((1U == (7U & (vlSelf->Top__DOT__executeMemoryPayload[1U] 
                                                   >> 9U)))
                                      ? ((vlSelf->Top__DOT__executeMemoryPayload[3U] 
@@ -612,26 +586,34 @@ VL_ATTR_COLD void VTop___024root___stl_sequent__TOP__0(VTop___024root* vlSelf) {
                                                 | (vlSelf->Top__DOT__executeMemoryPayload[0U] 
                                                    >> 3U))
                                              : 0U)));
-        } else if (((((IData)(vlSelf->dbg_MEM_WB_Valid) 
-                      & (IData)(vlSelf->Top__DOT__destinationEnable)) 
-                     & (0U != (0x1fU & (vlSelf->Top__DOT__memoryWritebackPayload[2U] 
-                                        >> 0xcU)))) 
-                    & ((0x1fU & (vlSelf->Top__DOT__decodeExecutePayload[2U] 
-                                 >> 0xaU)) == (0x1fU 
-                                               & (vlSelf->Top__DOT__memoryWritebackPayload[2U] 
-                                                  >> 0xcU))))) {
             vlSelf->forwardEnable2 = 1U;
+            VL_WRITEF("Forward Rs2 from EX/MEM. Value: %10#\n",
+                      32,vlSelf->forwardData2);
+        } else if (VL_UNLIKELY(((((IData)(vlSelf->dbg_MEM_WB_Valid) 
+                                  & (IData)(vlSelf->Top__DOT__destinationEnable)) 
+                                 & (0U != (0x1fU & 
+                                           (vlSelf->Top__DOT__memoryWritebackPayload[2U] 
+                                            >> 0xcU)))) 
+                                & ((0x1fU & (vlSelf->Top__DOT__decodeExecutePayload[2U] 
+                                             >> 0xaU)) 
+                                   == (0x1fU & (vlSelf->Top__DOT__memoryWritebackPayload[2U] 
+                                                >> 0xcU)))))) {
             vlSelf->forwardData2 = vlSelf->Top__DOT__writeData;
+            vlSelf->forwardEnable2 = 1U;
+            VL_WRITEF("Forward Rs2 from MEM/WB. Value: %10#\n",
+                      32,vlSelf->forwardData2);
         }
     }
 }
 
 void VTop___024root___act_sequent__TOP__0(VTop___024root* vlSelf);
-void VTop___024root___act_sequent__TOP__1(VTop___024root* vlSelf);
+void VTop___024root___ico_comb__TOP__0(VTop___024root* vlSelf);
 void VTop___024root___act_sequent__TOP__2(VTop___024root* vlSelf);
 void VTop___024root___act_sequent__TOP__3(VTop___024root* vlSelf);
+void VTop___024root___act_sequent__TOP__4(VTop___024root* vlSelf);
 void VTop___024root___act_comb__TOP__0(VTop___024root* vlSelf);
 void VTop___024root___act_comb__TOP__1(VTop___024root* vlSelf);
+void VTop___024root___ico_comb__TOP__2(VTop___024root* vlSelf);
 
 VL_ATTR_COLD void VTop___024root___eval_stl(VTop___024root* vlSelf) {
     if (false && vlSelf) {}  // Prevent unused
@@ -644,20 +626,26 @@ VL_ATTR_COLD void VTop___024root___eval_stl(VTop___024root* vlSelf) {
     if ((3ULL & vlSelf->__VstlTriggered.word(0U))) {
         VTop___024root___act_sequent__TOP__0(vlSelf);
     }
-    if ((5ULL & vlSelf->__VstlTriggered.word(0U))) {
-        VTop___024root___act_sequent__TOP__1(vlSelf);
-    }
     if ((9ULL & vlSelf->__VstlTriggered.word(0U))) {
+        VTop___024root___ico_comb__TOP__0(vlSelf);
+    }
+    if ((5ULL & vlSelf->__VstlTriggered.word(0U))) {
         VTop___024root___act_sequent__TOP__2(vlSelf);
     }
     if ((0x11ULL & vlSelf->__VstlTriggered.word(0U))) {
         VTop___024root___act_sequent__TOP__3(vlSelf);
     }
+    if ((0x21ULL & vlSelf->__VstlTriggered.word(0U))) {
+        VTop___024root___act_sequent__TOP__4(vlSelf);
+    }
     if ((7ULL & vlSelf->__VstlTriggered.word(0U))) {
         VTop___024root___act_comb__TOP__0(vlSelf);
     }
-    if ((0x19ULL & vlSelf->__VstlTriggered.word(0U))) {
+    if ((0x31ULL & vlSelf->__VstlTriggered.word(0U))) {
         VTop___024root___act_comb__TOP__1(vlSelf);
+    }
+    if ((0xfULL & vlSelf->__VstlTriggered.word(0U))) {
+        VTop___024root___ico_comb__TOP__2(vlSelf);
     }
 }
 
@@ -691,7 +679,10 @@ VL_ATTR_COLD void VTop___024root___dump_triggers__ico(VTop___024root* vlSelf) {
         VL_DBG_MSGF("         'ico' region trigger index 0 is active: Internal 'ico' trigger - first iteration\n");
     }
     if ((2ULL & vlSelf->__VicoTriggered.word(0U))) {
-        VL_DBG_MSGF("         'ico' region trigger index 1 is active: @([hybrid] Top.memoryWritebackControl)\n");
+        VL_DBG_MSGF("         'ico' region trigger index 1 is active: @([hybrid] Top.mretSignal or [hybrid] Top.stallControl)\n");
+    }
+    if ((4ULL & vlSelf->__VicoTriggered.word(0U))) {
+        VL_DBG_MSGF("         'ico' region trigger index 2 is active: @([hybrid] Top.stallControl)\n");
     }
 }
 #endif  // VL_DEBUG
@@ -709,16 +700,19 @@ VL_ATTR_COLD void VTop___024root___dump_triggers__act(VTop___024root* vlSelf) {
         VL_DBG_MSGF("         'act' region trigger index 0 is active: @([hybrid] Top.readCSR)\n");
     }
     if ((2ULL & vlSelf->__VactTriggered.word(0U))) {
-        VL_DBG_MSGF("         'act' region trigger index 1 is active: @([hybrid] Top.memoryWritebackControl)\n");
+        VL_DBG_MSGF("         'act' region trigger index 1 is active: @([hybrid] Top.mretSignal or [hybrid] Top.stallControl)\n");
     }
     if ((4ULL & vlSelf->__VactTriggered.word(0U))) {
-        VL_DBG_MSGF("         'act' region trigger index 2 is active: @([hybrid] Top.readAddress1)\n");
+        VL_DBG_MSGF("         'act' region trigger index 2 is active: @([hybrid] Top.stallControl)\n");
     }
     if ((8ULL & vlSelf->__VactTriggered.word(0U))) {
-        VL_DBG_MSGF("         'act' region trigger index 3 is active: @([hybrid] Top.readAddress2)\n");
+        VL_DBG_MSGF("         'act' region trigger index 3 is active: @([hybrid] Top.readAddress1)\n");
     }
     if ((0x10ULL & vlSelf->__VactTriggered.word(0U))) {
-        VL_DBG_MSGF("         'act' region trigger index 4 is active: @(posedge clock)\n");
+        VL_DBG_MSGF("         'act' region trigger index 4 is active: @([hybrid] Top.readAddress2)\n");
+    }
+    if ((0x20ULL & vlSelf->__VactTriggered.word(0U))) {
+        VL_DBG_MSGF("         'act' region trigger index 5 is active: @(posedge clock)\n");
     }
 }
 #endif  // VL_DEBUG
@@ -736,16 +730,19 @@ VL_ATTR_COLD void VTop___024root___dump_triggers__nba(VTop___024root* vlSelf) {
         VL_DBG_MSGF("         'nba' region trigger index 0 is active: @([hybrid] Top.readCSR)\n");
     }
     if ((2ULL & vlSelf->__VnbaTriggered.word(0U))) {
-        VL_DBG_MSGF("         'nba' region trigger index 1 is active: @([hybrid] Top.memoryWritebackControl)\n");
+        VL_DBG_MSGF("         'nba' region trigger index 1 is active: @([hybrid] Top.mretSignal or [hybrid] Top.stallControl)\n");
     }
     if ((4ULL & vlSelf->__VnbaTriggered.word(0U))) {
-        VL_DBG_MSGF("         'nba' region trigger index 2 is active: @([hybrid] Top.readAddress1)\n");
+        VL_DBG_MSGF("         'nba' region trigger index 2 is active: @([hybrid] Top.stallControl)\n");
     }
     if ((8ULL & vlSelf->__VnbaTriggered.word(0U))) {
-        VL_DBG_MSGF("         'nba' region trigger index 3 is active: @([hybrid] Top.readAddress2)\n");
+        VL_DBG_MSGF("         'nba' region trigger index 3 is active: @([hybrid] Top.readAddress1)\n");
     }
     if ((0x10ULL & vlSelf->__VnbaTriggered.word(0U))) {
-        VL_DBG_MSGF("         'nba' region trigger index 4 is active: @(posedge clock)\n");
+        VL_DBG_MSGF("         'nba' region trigger index 4 is active: @([hybrid] Top.readAddress2)\n");
+    }
+    if ((0x20ULL & vlSelf->__VnbaTriggered.word(0U))) {
+        VL_DBG_MSGF("         'nba' region trigger index 5 is active: @(posedge clock)\n");
     }
 }
 #endif  // VL_DEBUG
@@ -849,14 +846,17 @@ VL_ATTR_COLD void VTop___024root___ctor_var_reset(VTop___024root* vlSelf) {
     vlSelf->Top__DOT__dmem_inst__DOT__storeValid_q = VL_RAND_RESET_I(1);
     vlSelf->Top__DOT__dmem_inst__DOT__unnamedblk1__DOT__word = VL_RAND_RESET_I(32);
     vlSelf->__Vtrigprevexpr___TOP__Top__DOT__readCSR__0 = VL_RAND_RESET_I(4);
-    vlSelf->__Vtrigprevexpr___TOP__Top__DOT__memoryWritebackControl__0 = VL_RAND_RESET_I(2);
+    vlSelf->__Vtrigprevexpr___TOP__Top__DOT__mretSignal__0 = VL_RAND_RESET_I(1);
+    vlSelf->__Vtrigprevexpr___TOP__Top__DOT__stallControl__0 = VL_RAND_RESET_I(1);
     vlSelf->__Vtrigprevexpr___TOP__Top__DOT__readAddress1__0 = VL_RAND_RESET_I(5);
     vlSelf->__Vtrigprevexpr___TOP__Top__DOT__readAddress2__0 = VL_RAND_RESET_I(5);
     vlSelf->__VstlDidInit = 0;
-    vlSelf->__Vtrigprevexpr___TOP__Top__DOT__memoryWritebackControl__1 = VL_RAND_RESET_I(2);
+    vlSelf->__Vtrigprevexpr___TOP__Top__DOT__mretSignal__1 = VL_RAND_RESET_I(1);
+    vlSelf->__Vtrigprevexpr___TOP__Top__DOT__stallControl__1 = VL_RAND_RESET_I(1);
     vlSelf->__VicoDidInit = 0;
     vlSelf->__Vtrigprevexpr___TOP__Top__DOT__readCSR__1 = VL_RAND_RESET_I(4);
-    vlSelf->__Vtrigprevexpr___TOP__Top__DOT__memoryWritebackControl__2 = VL_RAND_RESET_I(2);
+    vlSelf->__Vtrigprevexpr___TOP__Top__DOT__mretSignal__2 = VL_RAND_RESET_I(1);
+    vlSelf->__Vtrigprevexpr___TOP__Top__DOT__stallControl__2 = VL_RAND_RESET_I(1);
     vlSelf->__Vtrigprevexpr___TOP__Top__DOT__readAddress1__1 = VL_RAND_RESET_I(5);
     vlSelf->__Vtrigprevexpr___TOP__Top__DOT__readAddress2__1 = VL_RAND_RESET_I(5);
     vlSelf->__Vtrigprevexpr___TOP__clock__0 = VL_RAND_RESET_I(1);

@@ -57,16 +57,19 @@ class alignas(VL_CACHE_LINE_BYTES) VTop___024root final : public VerilatedModule
         CData/*7:0*/ Top__DOT__memory__DOT__unnamedblk1__DOT__b;
         CData/*0:0*/ Top__DOT__dmem_inst__DOT__storeValid_q;
         CData/*3:0*/ __Vtrigprevexpr___TOP__Top__DOT__readCSR__0;
-        CData/*1:0*/ __Vtrigprevexpr___TOP__Top__DOT__memoryWritebackControl__0;
+        CData/*0:0*/ __Vtrigprevexpr___TOP__Top__DOT__mretSignal__0;
+        CData/*0:0*/ __Vtrigprevexpr___TOP__Top__DOT__stallControl__0;
         CData/*4:0*/ __Vtrigprevexpr___TOP__Top__DOT__readAddress1__0;
         CData/*4:0*/ __Vtrigprevexpr___TOP__Top__DOT__readAddress2__0;
         CData/*0:0*/ __VstlDidInit;
         CData/*0:0*/ __VstlFirstIteration;
-        CData/*1:0*/ __Vtrigprevexpr___TOP__Top__DOT__memoryWritebackControl__1;
+        CData/*0:0*/ __Vtrigprevexpr___TOP__Top__DOT__mretSignal__1;
+        CData/*0:0*/ __Vtrigprevexpr___TOP__Top__DOT__stallControl__1;
         CData/*0:0*/ __VicoDidInit;
         CData/*0:0*/ __VicoFirstIteration;
         CData/*3:0*/ __Vtrigprevexpr___TOP__Top__DOT__readCSR__1;
-        CData/*1:0*/ __Vtrigprevexpr___TOP__Top__DOT__memoryWritebackControl__2;
+        CData/*0:0*/ __Vtrigprevexpr___TOP__Top__DOT__mretSignal__2;
+        CData/*0:0*/ __Vtrigprevexpr___TOP__Top__DOT__stallControl__2;
         CData/*4:0*/ __Vtrigprevexpr___TOP__Top__DOT__readAddress1__1;
         CData/*4:0*/ __Vtrigprevexpr___TOP__Top__DOT__readAddress2__1;
         CData/*0:0*/ __Vtrigprevexpr___TOP__clock__0;
@@ -77,11 +80,11 @@ class alignas(VL_CACHE_LINE_BYTES) VTop___024root final : public VerilatedModule
         VL_OUT(dbg_IF_ID_programCounter,31,0);
         VL_OUT(dbg_IF_ID_instruction,31,0);
         VL_OUT(dbg_ID_EX_programCounter,31,0);
+    };
+    struct {
         VL_OUT(dbg_EX_MEM_programCounter,31,0);
         VL_OUT(dbg_MEM_WB_programCounter,31,0);
         VL_OUT(dbg_IMEM_data,31,0);
-    };
-    struct {
         VL_OUT(dbg_pc,31,0);
         VL_OUT(dbg_wb_value,31,0);
         VL_OUT(forwardData1,31,0);
@@ -111,10 +114,10 @@ class alignas(VL_CACHE_LINE_BYTES) VTop___024root final : public VerilatedModule
         VlUnpacked<IData/*31:0*/, 16384> Top__DOT__imem_inst__DOT__mem;
         VlUnpacked<IData/*31:0*/, 16384> Top__DOT__dmem_inst__DOT__mem;
     };
-    VlTriggerVec<5> __VstlTriggered;
-    VlTriggerVec<2> __VicoTriggered;
-    VlTriggerVec<5> __VactTriggered;
-    VlTriggerVec<5> __VnbaTriggered;
+    VlTriggerVec<6> __VstlTriggered;
+    VlTriggerVec<3> __VicoTriggered;
+    VlTriggerVec<6> __VactTriggered;
+    VlTriggerVec<6> __VnbaTriggered;
 
     // INTERNAL VARIABLES
     VTop__Syms* const vlSymsp;

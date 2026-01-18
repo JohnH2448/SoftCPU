@@ -19,7 +19,7 @@ int main(int argc, char **argv) {
     printf("SIM: starting execution\n");
 
     // run
-    for (int i = 1; i < 800; i++) {
+    for (int i = 1; i < 60; i++) {
         top.clock = 0; top.eval();
         top.clock = 1; top.eval();
         printf("\n\n");

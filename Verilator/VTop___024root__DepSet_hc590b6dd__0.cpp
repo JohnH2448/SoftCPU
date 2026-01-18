@@ -16,13 +16,20 @@ void VTop___024root___eval_triggers__ico(VTop___024root* vlSelf) {
     VL_DEBUG_IF(VL_DBG_MSGF("+    VTop___024root___eval_triggers__ico\n"); );
     // Body
     vlSelf->__VicoTriggered.set(0U, (IData)(vlSelf->__VicoFirstIteration));
-    vlSelf->__VicoTriggered.set(1U, ((IData)(vlSelf->Top__DOT__memoryWritebackControl) 
-                                     != (IData)(vlSelf->__Vtrigprevexpr___TOP__Top__DOT__memoryWritebackControl__1)));
-    vlSelf->__Vtrigprevexpr___TOP__Top__DOT__memoryWritebackControl__1 
-        = vlSelf->Top__DOT__memoryWritebackControl;
+    vlSelf->__VicoTriggered.set(1U, (((IData)(vlSelf->Top__DOT__mretSignal) 
+                                      != (IData)(vlSelf->__Vtrigprevexpr___TOP__Top__DOT__mretSignal__1)) 
+                                     | ((IData)(vlSelf->Top__DOT__stallControl) 
+                                        != (IData)(vlSelf->__Vtrigprevexpr___TOP__Top__DOT__stallControl__1))));
+    vlSelf->__VicoTriggered.set(2U, ((IData)(vlSelf->Top__DOT__stallControl) 
+                                     != (IData)(vlSelf->__Vtrigprevexpr___TOP__Top__DOT__stallControl__1)));
+    vlSelf->__Vtrigprevexpr___TOP__Top__DOT__mretSignal__1 
+        = vlSelf->Top__DOT__mretSignal;
+    vlSelf->__Vtrigprevexpr___TOP__Top__DOT__stallControl__1 
+        = vlSelf->Top__DOT__stallControl;
     if (VL_UNLIKELY((1U & (~ (IData)(vlSelf->__VicoDidInit))))) {
         vlSelf->__VicoDidInit = 1U;
         vlSelf->__VicoTriggered.set(1U, 1U);
+        vlSelf->__VicoTriggered.set(2U, 1U);
     }
 #ifdef VL_DEBUG
     if (VL_UNLIKELY(vlSymsp->_vm_contextp__->debug())) {
@@ -42,18 +49,24 @@ void VTop___024root___eval_triggers__act(VTop___024root* vlSelf) {
     // Body
     vlSelf->__VactTriggered.set(0U, ((IData)(vlSelf->Top__DOT__readCSR) 
                                      != (IData)(vlSelf->__Vtrigprevexpr___TOP__Top__DOT__readCSR__1)));
-    vlSelf->__VactTriggered.set(1U, ((IData)(vlSelf->Top__DOT__memoryWritebackControl) 
-                                     != (IData)(vlSelf->__Vtrigprevexpr___TOP__Top__DOT__memoryWritebackControl__2)));
-    vlSelf->__VactTriggered.set(2U, ((IData)(vlSelf->Top__DOT__readAddress1) 
+    vlSelf->__VactTriggered.set(1U, (((IData)(vlSelf->Top__DOT__mretSignal) 
+                                      != (IData)(vlSelf->__Vtrigprevexpr___TOP__Top__DOT__mretSignal__2)) 
+                                     | ((IData)(vlSelf->Top__DOT__stallControl) 
+                                        != (IData)(vlSelf->__Vtrigprevexpr___TOP__Top__DOT__stallControl__2))));
+    vlSelf->__VactTriggered.set(2U, ((IData)(vlSelf->Top__DOT__stallControl) 
+                                     != (IData)(vlSelf->__Vtrigprevexpr___TOP__Top__DOT__stallControl__2)));
+    vlSelf->__VactTriggered.set(3U, ((IData)(vlSelf->Top__DOT__readAddress1) 
                                      != (IData)(vlSelf->__Vtrigprevexpr___TOP__Top__DOT__readAddress1__1)));
-    vlSelf->__VactTriggered.set(3U, ((IData)(vlSelf->Top__DOT__readAddress2) 
+    vlSelf->__VactTriggered.set(4U, ((IData)(vlSelf->Top__DOT__readAddress2) 
                                      != (IData)(vlSelf->__Vtrigprevexpr___TOP__Top__DOT__readAddress2__1)));
-    vlSelf->__VactTriggered.set(4U, ((IData)(vlSelf->clock) 
+    vlSelf->__VactTriggered.set(5U, ((IData)(vlSelf->clock) 
                                      & (~ (IData)(vlSelf->__Vtrigprevexpr___TOP__clock__0))));
     vlSelf->__Vtrigprevexpr___TOP__Top__DOT__readCSR__1 
         = vlSelf->Top__DOT__readCSR;
-    vlSelf->__Vtrigprevexpr___TOP__Top__DOT__memoryWritebackControl__2 
-        = vlSelf->Top__DOT__memoryWritebackControl;
+    vlSelf->__Vtrigprevexpr___TOP__Top__DOT__mretSignal__2 
+        = vlSelf->Top__DOT__mretSignal;
+    vlSelf->__Vtrigprevexpr___TOP__Top__DOT__stallControl__2 
+        = vlSelf->Top__DOT__stallControl;
     vlSelf->__Vtrigprevexpr___TOP__Top__DOT__readAddress1__1 
         = vlSelf->Top__DOT__readAddress1;
     vlSelf->__Vtrigprevexpr___TOP__Top__DOT__readAddress2__1 
@@ -65,6 +78,7 @@ void VTop___024root___eval_triggers__act(VTop___024root* vlSelf) {
         vlSelf->__VactTriggered.set(1U, 1U);
         vlSelf->__VactTriggered.set(2U, 1U);
         vlSelf->__VactTriggered.set(3U, 1U);
+        vlSelf->__VactTriggered.set(4U, 1U);
     }
 #ifdef VL_DEBUG
     if (VL_UNLIKELY(vlSymsp->_vm_contextp__->debug())) {
