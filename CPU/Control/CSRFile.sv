@@ -53,6 +53,7 @@ module CSRFile (
                     4'hB: csrs[MEPC] <= decodeExecutePC;
                     4'h3: csrs[MEPC] <= decodeExecutePC;
                 endcase
+                $strobe("\n\nException: MEPC=%08h MCAUSE=%08h MTVEC=%08h", csrs[MEPC], csrs[MCAUSE], csrs[MTVEC],"\n");
             end
         end
     end

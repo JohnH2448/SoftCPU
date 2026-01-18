@@ -239,8 +239,7 @@ module Top (
         .readData1(readData1),
         .readData2(readData2),
         .debug_regs_flat(debug_regs_flat),
-        .memoryWritebackValid(memoryWritebackValid),
-        .dualValid(dualValid)
+        .memoryWritebackValid(memoryWritebackValid)
     );
 
     Execute execute (
@@ -295,7 +294,7 @@ module Top (
         .dualValid(dualValid)
     );
 
-    Imem #(.DEPTH_WORDS(1024)) imem_inst (
+    Imem imem_inst (
         .clock   (clock),
         .reset   (reset),
         .address (instructionAddress),    // from Fetch
@@ -303,7 +302,7 @@ module Top (
         .valid   (instructionDataValid)   // to Fetch
     );
 
-    Dmem #(.DEPTH_WORDS(1024)) dmem_inst (
+    Dmem dmem_inst (
         .clock          (clock),
         .reset          (reset),
         .address        (addressRegister),       // from Memory

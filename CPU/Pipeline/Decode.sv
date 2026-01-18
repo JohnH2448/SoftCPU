@@ -50,8 +50,8 @@ module Decode (
             end // R-type   (reg–reg ALU)
             OPCODE_MISC_MEM: begin 
                 unique case (fetchDecodePayload.instruction[14:12])
-                    3'b000: // nop
-                    3'b001: // nop
+                    3'b000: ;// nop
+                    3'b001: ;// nop
                     default: decodeExecuteCandidate.illegal = 1'b1;
                 endcase
             end // I-type   (FENCE / FENCE.I)

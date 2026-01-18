@@ -19,7 +19,7 @@ int main(int argc, char **argv) {
     printf("SIM: starting execution\n");
 
     // run
-    for (int i = 0; i < 150; i++) {
+    for (int i = 1; i < 800; i++) {
         top.clock = 0; top.eval();
         top.clock = 1; top.eval();
         printf("\n\n");
@@ -32,7 +32,6 @@ int main(int argc, char **argv) {
         printf("ID/EX  PC=%08x v=%d\n",
             top.dbg_ID_EX_programCounter,
             top.dbg_ID_EX_Valid);
-
         printf("EX/MEM PC=%08x v=%d\n",
             top.dbg_EX_MEM_programCounter,
             top.dbg_EX_MEM_Valid);
@@ -40,24 +39,10 @@ int main(int argc, char **argv) {
         printf("MEM/WB PC=%08x v=%d\n",
             top.dbg_MEM_WB_programCounter,
             top.dbg_MEM_WB_Valid);
-
-        if (top.dbg_trap) {
-            printf("TRAP encountered! Halting simulation.\n");
-            break;
-        }
-        if (top.forwardEnable1) {
-            printf("Foreward Event: Data=%08x\n", top.forwardData1);
-        }
-        if (top.forwardEnable2) {
-            printf("Foreward Event: Data=%08x\n", top.forwardData2);
-        }
         printf("\nRegisters:");
         for (int i = 0; i < 32; i++) {
             if (i % 8 == 0) printf("\n");
             printf("x%02d=%08x ", i, top.dbg_registers[i]);
-        }
-        if (top.dbg_wb_value) {
-            printf("\n\nWB Event: Value=%08x", top.dbg_wb_value);
         }
     }
     printf("\n\n");

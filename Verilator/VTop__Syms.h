@@ -28,6 +28,9 @@ class alignas(VL_CACHE_LINE_BYTES)VTop__Syms final : public VerilatedSyms {
     // MODULE INSTANCE STATE
     VTop___024root                 TOP;
 
+    // SCOPE NAMES
+    VerilatedScope __Vscope_Top__csrFile;
+
     // CONSTRUCTORS
     VTop__Syms(VerilatedContext* contextp, const char* namep, VTop* modelp);
     ~VTop__Syms();

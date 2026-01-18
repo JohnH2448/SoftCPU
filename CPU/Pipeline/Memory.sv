@@ -143,8 +143,8 @@ module Memory (
             memoryWritebackPayload.oldCSRValue <= executeMemoryPayload.oldCSRValue;
             memoryWritebackPayload.CSROp <= executeMemoryPayload.CSROp;
             memoryWritebackPayload.CSRWriteIntent <= executeMemoryPayload.CSRWriteIntent;
-            memoryWritebackPayload.memoryReadEnable <= executeMemoryPayload.memoryReadEnable
-            memoryWritebackPayload.memoryWriteEnable <= executeMemoryPayload.memoryWriteEnable
+            memoryWritebackPayload.memoryReadEnable <= executeMemoryPayload.memoryReadEnable;
+            memoryWritebackPayload.memoryWriteEnable <= executeMemoryPayload.memoryWriteEnable;
             if (executeMemoryPayload.CSROp != CSR_NONE) begin
                 memoryWritebackPayload.data <= executeMemoryPayload.result;
             end

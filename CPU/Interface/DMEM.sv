@@ -1,6 +1,4 @@
-module Dmem #(
-    parameter int DEPTH_WORDS = 16384
-) (
+module Dmem (
     input logic clock,
     input logic reset,
     input logic [31:0] address,
@@ -12,24 +10,15 @@ module Dmem #(
     output logic storeComplete
 );
 
-    localparam int ADDR_LSB = 2;
-    localparam int ADDR_MSB = ADDR_LSB + $clog2(DEPTH_WORDS) - 1;
-
-    logic [31:0] mem [0:DEPTH_WORDS-1];
+    logic [31:0] mem [0:16383];
     logic storeValid_q;
-
-    initial begin
-        integer i;
-        for (i = 0; i < DEPTH_WORDS; i++)
-            mem[i] = 32'h0;
-    end
 
     always_comb begin
         if (reset) begin
-            loadData = 32'h00000000;
+            loadData = 32'b0;
             loadDataValid = 1'b0;
         end else begin
-            loadData = mem[address[ADDR_MSB:ADDR_LSB]];
+            loadData = mem[address[15:2]];
             loadDataValid = 1'b1;
         end
     end
@@ -41,15 +30,13 @@ module Dmem #(
         end else begin
             storeComplete <= 1'b0;
             if (storeValid && !storeValid_q) begin
-                int idx;
                 logic [31:0] word;
-                idx = address[ADDR_MSB:ADDR_LSB];
-                word = mem[idx];
+                word = mem[address[15:2]];
                 if (byteEnable[0]) word[7:0] = storeData[7:0];
                 if (byteEnable[1]) word[15:8] = storeData[15:8];
                 if (byteEnable[2]) word[23:16] = storeData[23:16];
                 if (byteEnable[3]) word[31:24] = storeData[31:24];
-                mem[idx] <= word;
+                mem[address[31:2]] <= word;
                 storeComplete <= 1'b1;
             end
             storeValid_q <= storeValid;

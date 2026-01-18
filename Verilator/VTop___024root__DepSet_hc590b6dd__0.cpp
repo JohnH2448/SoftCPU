@@ -40,24 +40,24 @@ void VTop___024root___eval_triggers__act(VTop___024root* vlSelf) {
     VTop__Syms* const __restrict vlSymsp VL_ATTR_UNUSED = vlSelf->vlSymsp;
     VL_DEBUG_IF(VL_DBG_MSGF("+    VTop___024root___eval_triggers__act\n"); );
     // Body
-    vlSelf->__VactTriggered.set(0U, ((IData)(vlSelf->Top__DOT__memoryWritebackControl) 
-                                     != (IData)(vlSelf->__Vtrigprevexpr___TOP__Top__DOT__memoryWritebackControl__2)));
-    vlSelf->__VactTriggered.set(1U, ((IData)(vlSelf->Top__DOT__readAddress1) 
-                                     != (IData)(vlSelf->__Vtrigprevexpr___TOP__Top__DOT__readAddress1__1)));
-    vlSelf->__VactTriggered.set(2U, ((IData)(vlSelf->Top__DOT__readAddress2) 
-                                     != (IData)(vlSelf->__Vtrigprevexpr___TOP__Top__DOT__readAddress2__1)));
-    vlSelf->__VactTriggered.set(3U, ((IData)(vlSelf->Top__DOT__readCSR) 
+    vlSelf->__VactTriggered.set(0U, ((IData)(vlSelf->Top__DOT__readCSR) 
                                      != (IData)(vlSelf->__Vtrigprevexpr___TOP__Top__DOT__readCSR__1)));
+    vlSelf->__VactTriggered.set(1U, ((IData)(vlSelf->Top__DOT__memoryWritebackControl) 
+                                     != (IData)(vlSelf->__Vtrigprevexpr___TOP__Top__DOT__memoryWritebackControl__2)));
+    vlSelf->__VactTriggered.set(2U, ((IData)(vlSelf->Top__DOT__readAddress1) 
+                                     != (IData)(vlSelf->__Vtrigprevexpr___TOP__Top__DOT__readAddress1__1)));
+    vlSelf->__VactTriggered.set(3U, ((IData)(vlSelf->Top__DOT__readAddress2) 
+                                     != (IData)(vlSelf->__Vtrigprevexpr___TOP__Top__DOT__readAddress2__1)));
     vlSelf->__VactTriggered.set(4U, ((IData)(vlSelf->clock) 
                                      & (~ (IData)(vlSelf->__Vtrigprevexpr___TOP__clock__0))));
+    vlSelf->__Vtrigprevexpr___TOP__Top__DOT__readCSR__1 
+        = vlSelf->Top__DOT__readCSR;
     vlSelf->__Vtrigprevexpr___TOP__Top__DOT__memoryWritebackControl__2 
         = vlSelf->Top__DOT__memoryWritebackControl;
     vlSelf->__Vtrigprevexpr___TOP__Top__DOT__readAddress1__1 
         = vlSelf->Top__DOT__readAddress1;
     vlSelf->__Vtrigprevexpr___TOP__Top__DOT__readAddress2__1 
         = vlSelf->Top__DOT__readAddress2;
-    vlSelf->__Vtrigprevexpr___TOP__Top__DOT__readCSR__1 
-        = vlSelf->Top__DOT__readCSR;
     vlSelf->__Vtrigprevexpr___TOP__clock__0 = vlSelf->clock;
     if (VL_UNLIKELY((1U & (~ (IData)(vlSelf->__VactDidInit))))) {
         vlSelf->__VactDidInit = 1U;
