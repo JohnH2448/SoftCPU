@@ -18,7 +18,7 @@ module Dmem (
         for (i = 0; i < 16384; i = i + 1) begin
             mem[i] = 32'h00000013;
         end
-        $display("IMEM: loading imem.hex");
+        $display("DMEM: loading dmem.hex");
         $readmemh("dmem.hex", mem);
     end
     
