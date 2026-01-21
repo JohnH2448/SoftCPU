@@ -136,7 +136,6 @@ module Memory (
                 end
                 default: memoryWritebackPayload.writebackEnable <= 1'b0;
             endcase
-            memoryWritebackPayload.illegal <= illegal || executeMemoryPayload.illegal;
             memoryWritebackPayload.valid <= executeMemoryPayload.valid;
             memoryWritebackPayload.programCounter <= executeMemoryPayload.programCounter;
             memoryWritebackPayload.destinationRegister <= executeMemoryPayload.destinationRegister;
@@ -144,10 +143,20 @@ module Memory (
             memoryWritebackPayload.oldCSRValue <= executeMemoryPayload.oldCSRValue;
             memoryWritebackPayload.CSROp <= executeMemoryPayload.CSROp;
             memoryWritebackPayload.CSRWriteIntent <= executeMemoryPayload.CSRWriteIntent;
-            memoryWritebackPayload.memoryReadEnable <= executeMemoryPayload.memoryReadEnable;
-            memoryWritebackPayload.memoryWriteEnable <= executeMemoryPayload.memoryWriteEnable;
             if (executeMemoryPayload.CSROp != CSR_NONE) begin
                 memoryWritebackPayload.data <= executeMemoryPayload.result;
+            end
+            memoryWritebackPayload.trapPayload <= executeMemoryPayload.trapPayload;
+            if (illegal && executeMemoryPayload.valid) begin
+                if (executeMemoryPayload.trapPayload.trapType == NONE) begin
+                    if (executeMemoryPayload.memoryWriteEnable) begin
+                        memoryWritebackPayload.trapPayload.trapType <= MIS_STORE;
+                        memoryWritebackPayload.trapPayload.faultingAddress <= addressRegister;
+                    end else if (executeMemoryPayload.memoryReadEnable) begin
+                        memoryWritebackPayload.trapPayload.trapType <= MIS_LOAD;
+                        memoryWritebackPayload.trapPayload.faultingAddress <= addressRegister;
+                    end
+                end
             end
         end
     end

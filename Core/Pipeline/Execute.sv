@@ -118,7 +118,7 @@ module Execute (
             end else begin
                 branchValid = 1'd0;
             end
-            if ((decodeExecutePayload.jumpType != JUMP_NONE || decodeExecutePayload.branchType != BR_NONE) && (decodeExecutePayload.valid == 1'b1) && (branchValid == 1'd1) && (!decodeExecutePayload.illegal)) begin
+            if ((decodeExecutePayload.jumpType != JUMP_NONE || decodeExecutePayload.branchType != BR_NONE) && (decodeExecutePayload.valid == 1'b1) && (branchValid == 1'd1) && (decodeExecutePayload.trapPayload.trapType == NONE)) begin
                 if (decodeExecutePayload.jumpType == JUMP_JALR) begin
                     branchData = {result[31:1], 1'b0};
                 end else begin
@@ -175,7 +175,6 @@ module Execute (
         end
     end
 
-
     always_ff @(posedge clock) begin
         if (reset) begin // synth will reduce this, broken up for clarity
             redirectAsserted <= 1'd0;
@@ -207,10 +206,13 @@ module Execute (
             executeMemoryPayload.storeData <= (forwardEnable2 ? forwardData2 : decodeExecutePayload.registerData2);
             executeMemoryPayload.writebackType <= decodeExecutePayload.writebackType;
             executeMemoryPayload.valid <= decodeExecutePayload.valid;
-            if (!illegal) begin
-                executeMemoryPayload.illegal <= decodeExecutePayload.illegal;
-            end else begin
-                executeMemoryPayload.illegal <= 1'b1;
+            executeMemoryPayload.trapPayload <= decodeExecutePayload.trapPayload;
+            if (illegal && decodeExecutePayload.valid) begin
+                if (decodeExecutePayload.trapPayload.trapType == NONE) begin
+                    executeMemoryPayload.trapPayload.trapType <= MIS_INST;
+                    executeMemoryPayload.trapPayload.faultingAddress <= branchData;
+                    executeMemoryPayload.writebackType <= WB_NONE;
+                end
             end
             // csr
             executeMemoryPayload.destinationCSR <= decodeExecutePayload.decodeExecuteCSR.destinationCSR;
@@ -221,5 +223,4 @@ module Execute (
     end
     
 endmodule
-
 

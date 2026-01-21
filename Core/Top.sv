@@ -66,6 +66,7 @@ module Top (
     control memoryWritebackControl;
     logic controlReset;
     logic [3:0] mcause;
+    logic [31:0] mtval;
 
     // Register File
     logic [31:0] readData1;
@@ -83,7 +84,6 @@ module Top (
     decodeExecutePayload_ decodeExecutePayload;
     logic [4:0] readAddress1;
     logic [4:0] readAddress2;
-    logic decodeCombIllegal;
 
     // Execute Stage
     logic branchValid;
@@ -109,6 +109,7 @@ module Top (
     logic csrDestinationEnable;
     logic [31:0] csrWriteData;
     logic dualValid;
+    trapPayload_ trapData;
 
     // Forwarding Unit
     logic [31:0] csrForwardData;
@@ -160,7 +161,8 @@ module Top (
         .dualValid(dualValid),
         .decodeExecutePC(decodeExecutePayload.programCounter),
         .executeMemoryPC(executeMemoryPayload.programCounter),
-        .memoryWritebackPC(memoryWritebackPayload.programCounter)
+        .memoryWritebackPC(memoryWritebackPayload.programCounter),
+        .mtval(mtval)
     );
 
     BranchPredictor branchPredictor (
@@ -174,9 +176,7 @@ module Top (
         .clock(clock),
         .reset(reset),
         .decodeExecuteValid(decodeExecutePayload.valid),
-        .decodeExecuteIllegal(decodeExecutePayload.illegal),
         .memoryWritebackValid(memoryWritebackPayload.valid),
-        .memoryWritebackIllegal(memoryWritebackPayload.illegal),
         .branchValid(branchValid),
         .stallControl(stallControl),
         .fetchDecodeControl(fetchDecodeControl),
@@ -184,25 +184,15 @@ module Top (
         .executeMemoryControl(executeMemoryControl),
         .memoryWritebackControl(memoryWritebackControl),
         .controlReset(controlReset),
-        .decodeExecuteRegister1(decodeExecutePayload.readAddress1),
-        .decodeExecuteRegister2(decodeExecutePayload.readAddress2),
-        .executeMemoryDestinationRegister(executeMemoryPayload.destinationRegister),
-        .executeMemoryValid(executeMemoryPayload.valid),
-        .executeMemoryWritebackType(executeMemoryPayload.writebackType),
-        .loadDataValid(loadDataValid),
-        .executeMemoryIllegal(executeMemoryPayload.illegal),
         .mcause(mcause),
-        .ebreak(decodeExecutePayload.ebreak),
-        .ecall(decodeExecutePayload.ecall),
-        .memoryReadEnable(memoryWritebackPayload.memoryReadEnable),
-        .memoryWriteEnable(memoryWritebackPayload.memoryWriteEnable),
         .mretSignal(mretSignal),
         .readAddress1(readAddress1),
         .readAddress2(readAddress2),
-        .decodeCombIllegal(decodeCombIllegal),
         .fetchDecodeValid(fetchDecodePayload.valid),
         .decodeExecuteWBType(decodeExecutePayload.writebackType),
-        .decodeExecuteDestinationRegister(decodeExecutePayload.destinationRegister)
+        .decodeExecuteDestinationRegister(decodeExecutePayload.destinationRegister),
+        .trapData(trapData),
+        .mtval(mtval)
     );
 
     Fetch fetch (
@@ -233,8 +223,7 @@ module Top (
         .readAddress1(readAddress1),
         .readAddress2(readAddress2),
         .readData1(readData1),
-        .readData2(readData2),
-        .decodeCombIllegal(decodeCombIllegal)
+        .readData2(readData2)
     );
 
     RegisterFile registerFile (
@@ -299,7 +288,8 @@ module Top (
         .destinationCSR(destinationCSR),
         .csrDestinationEnable(csrDestinationEnable),
         .csrWriteData(csrWriteData),
-        .dualValid(dualValid)
+        .dualValid(dualValid),
+        .trapData(trapData)
     );
 
     Imem imem_inst (

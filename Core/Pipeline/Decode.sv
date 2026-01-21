@@ -10,8 +10,7 @@ module Decode (
     output logic [4:0] readAddress1,
     output logic [4:0] readAddress2,
     input logic [31:0] readData1,
-    input logic [31:0] readData2,
-    output logic decodeCombIllegal
+    input logic [31:0] readData2
 );
 
     opcode_ opcode;
@@ -28,7 +27,6 @@ module Decode (
         decodeExecuteCandidate.registerData2 = readData2;
         decodeExecuteCandidate.programCounter = fetchDecodePayload.programCounter;
         decodeExecuteCandidate.programCounterPlus4 = fetchDecodePayload.programCounterPlus4;
-        decodeCombIllegal = decodeExecuteCandidate.illegal;
         unique case (opcode)
             OPCODE_ALU_REG: begin 
                 decodeExecuteCandidate.destinationRegister = fetchDecodePayload.instruction[11:7];
@@ -47,14 +45,14 @@ module Decode (
                     10'b0100000101: decodeExecuteCandidate.aluOperation = ALU_SRA;
                     10'b0000000010: decodeExecuteCandidate.aluOperation = ALU_SLT;
                     10'b0000000011: decodeExecuteCandidate.aluOperation = ALU_SLTU;
-                    default: decodeExecuteCandidate.illegal = 1'b1;
+                    default: decodeExecuteCandidate.trapPayload.trapType = ILLEGAL;
                 endcase
             end // R-type   (reg–reg ALU)
             OPCODE_MISC_MEM: begin 
                 unique case (fetchDecodePayload.instruction[14:12])
                     3'b000: ;// nop
                     3'b001: ;// nop
-                    default: decodeExecuteCandidate.illegal = 1'b1;
+                    default: decodeExecuteCandidate.trapPayload.trapType = ILLEGAL;
                 endcase
             end // I-type   (FENCE / FENCE.I)
             OPCODE_ALU_IMM: begin 
@@ -74,7 +72,7 @@ module Decode (
                         if (fetchDecodePayload.instruction[31:25] == 7'b0000000)
                             decodeExecuteCandidate.aluOperation = ALU_SLL;
                         else
-                            decodeExecuteCandidate.illegal = 1'b1;
+                            decodeExecuteCandidate.trapPayload.trapType = ILLEGAL;
                     end
                     3'b101: begin // SRLI SRAI
                         if (fetchDecodePayload.instruction[31:25] == 7'b0000000)
@@ -82,9 +80,9 @@ module Decode (
                         else if (fetchDecodePayload.instruction[31:25] == 7'b0100000)
                             decodeExecuteCandidate.aluOperation = ALU_SRA;
                         else
-                            decodeExecuteCandidate.illegal = 1'b1;
+                            decodeExecuteCandidate.trapPayload.trapType = ILLEGAL;
                     end
-                    default: decodeExecuteCandidate.illegal = 1'b1;
+                    default: decodeExecuteCandidate.trapPayload.trapType = ILLEGAL;
                 endcase
             end // I-type   (reg–imm ALU)
             OPCODE_LOAD: begin 
@@ -115,7 +113,7 @@ module Decode (
                         decodeExecuteCandidate.memoryWidth = 2'b01;
                         decodeExecuteCandidate.memorySigned = 1'b0;
                     end
-                    default: decodeExecuteCandidate.illegal = 1'b1;
+                    default: decodeExecuteCandidate.trapPayload.trapType = ILLEGAL;
                 endcase
             end // I-type   (loads)
             OPCODE_STORE: begin 
@@ -128,7 +126,7 @@ module Decode (
                     3'b000: decodeExecuteCandidate.memoryWidth = 2'b00; // SB
                     3'b001: decodeExecuteCandidate.memoryWidth = 2'b01; // SH
                     3'b010: decodeExecuteCandidate.memoryWidth = 2'b11; // SW
-                    default: decodeExecuteCandidate.illegal = 1'b1;
+                    default: decodeExecuteCandidate.trapPayload.trapType = ILLEGAL;
                 endcase
             end // S-type   (stores)
             OPCODE_BRANCH: begin 
@@ -143,7 +141,7 @@ module Decode (
                     3'b101: decodeExecuteCandidate.branchType = BR_GE;   // BGE
                     3'b110: decodeExecuteCandidate.branchType = BR_LTU;  // BLTU
                     3'b111: decodeExecuteCandidate.branchType = BR_GEU;  // BGEU
-                    default: decodeExecuteCandidate.illegal = 1'b1;
+                    default: decodeExecuteCandidate.trapPayload.trapType = ILLEGAL;
                 endcase
             end // B-type   (conditional branches)
             OPCODE_LUI: begin 
@@ -173,7 +171,7 @@ module Decode (
                 decodeExecuteCandidate.jumpType = JUMP_JALR;
                 decodeExecuteCandidate.immediate = {{20{fetchDecodePayload.instruction[31]}},fetchDecodePayload.instruction[31:20]};
                 if (fetchDecodePayload.instruction[14:12] != 3'b000)
-                    decodeExecuteCandidate.illegal = 1'b1;
+                    decodeExecuteCandidate.trapPayload.trapType = ILLEGAL;
             end // I-type   (jump and link register)
             OPCODE_SYSTEM: begin
                 readAddress1 = fetchDecodePayload.instruction[19:15];
@@ -201,10 +199,10 @@ module Decode (
                         12'hB02: decodeExecuteCandidate.decodeExecuteCSR.destinationCSR = MINSTRET;
                         // ISA description (MRO)
                         12'h301: decodeExecuteCandidate.decodeExecuteCSR.destinationCSR = MISA;
-                        default: decodeExecuteCandidate.illegal = 1'b1;
+                        default: decodeExecuteCandidate.trapPayload.trapType = ILLEGAL;
                     endcase
                     unique case (fetchDecodePayload.instruction[14:12]) // funct3
-                        default: decodeExecuteCandidate.illegal = 1'b1;
+                        default: decodeExecuteCandidate.trapPayload.trapType = ILLEGAL;
                         3'b001: begin
                             decodeExecuteCandidate.decodeExecuteCSR.CSROp = CSR_RW;
                             decodeExecuteCandidate.decodeExecuteCSR.CSRSrc = 1'b1;
@@ -253,23 +251,23 @@ module Decode (
                         (decodeExecuteCandidate.decodeExecuteCSR.destinationCSR == MIMPID) ||
                         (decodeExecuteCandidate.decodeExecuteCSR.destinationCSR == MHARTID);
                     if (decodeExecuteCandidate.decodeExecuteCSR.CSRWriteIntent && ro) begin
-                        decodeExecuteCandidate.illegal = 1'b1;
+                        decodeExecuteCandidate.trapPayload.trapType = ILLEGAL;
                     end
                 end else begin
                     unique case (fetchDecodePayload.instruction)
-                        32'h00000073: decodeExecuteCandidate.ecall = 1;
-                        32'h00100073: decodeExecuteCandidate.ebreak = 1;
+                        32'h00000073: decodeExecuteCandidate.trapPayload.trapType = ECALL;
+                        32'h00100073: decodeExecuteCandidate.trapPayload.trapType = EBREAK;
                         32'h30200073: begin
                             decodeExecuteCandidate.isMRET = 1;
                             decodeExecuteCandidate.decodeExecuteCSR.destinationCSR = MEPC;
                         end
                         32'h10500073: ; // NOP
-                        default: decodeExecuteCandidate.illegal = 1;
+                        default: decodeExecuteCandidate.trapPayload.trapType = ILLEGAL;
                     endcase
                 end
             end // I-type   (CSR / ECALL / EBREAK / MRET / WFI (NOP))
             default: begin
-                decodeExecuteCandidate.illegal = 1'b1;
+                decodeExecuteCandidate.trapPayload.trapType = ILLEGAL;
             end
         endcase
         decodeExecuteCandidate.readAddress1 = readAddress1;
@@ -281,8 +279,23 @@ module Decode (
         end else if (decodeExecuteControl.flush) begin
             decodeExecutePayload.valid <= 1'b0;
         end else if (!decodeExecuteControl.stall) begin
-            decodeExecutePayload <= decodeExecuteCandidate;
-            decodeExecutePayload.valid <= fetchDecodePayload.valid;
+            if ((decodeExecuteCandidate.trapPayload.trapType != NONE) && fetchDecodePayload.valid) begin
+                decodeExecutePayload <= decodeExecuteCandidate;
+                decodeExecutePayload.destinationRegister <= 5'd0;
+                decodeExecutePayload.writebackType <= WB_NONE;
+                decodeExecutePayload.memoryReadEnable <= 1'b0;
+                decodeExecutePayload.memoryWriteEnable <= 1'b0;
+                decodeExecutePayload.decodeExecuteCSR.CSROp <= CSR_NONE;
+                decodeExecutePayload.trapPayload.instruction = fetchDecodePayload.instruction;
+                decodeExecutePayload.valid <= fetchDecodePayload.valid;
+                if (decodeExecuteCandidate.trapPayload.trapType == ILLEGAL) begin
+                    decodeExecutePayload.trapPayload.faultingAddress = fetchDecodePayload.programCounter;
+                end
+            end else begin
+                decodeExecutePayload <= decodeExecuteCandidate;
+                decodeExecutePayload.trapPayload.instruction = fetchDecodePayload.instruction;
+                decodeExecutePayload.valid <= fetchDecodePayload.valid;
+            end
         end
     end
 endmodule

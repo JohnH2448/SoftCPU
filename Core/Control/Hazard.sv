@@ -4,9 +4,7 @@ module Hazard (
     input logic clock,
     input logic reset,
     input logic decodeExecuteValid,
-    input logic decodeExecuteIllegal,
     input logic memoryWritebackValid,
-    input logic memoryWritebackIllegal,
     input logic branchValid,
     input logic stallControl,
     output control fetchDecodeControl,
@@ -15,25 +13,15 @@ module Hazard (
     output control memoryWritebackControl,
     output logic controlReset,
     // for load-use
-    input logic [4:0] decodeExecuteRegister1,
-    input logic [4:0] decodeExecuteRegister2,
-    input logic [4:0] executeMemoryDestinationRegister,
-    input logic executeMemoryValid,
-    input writebackType_ executeMemoryWritebackType,
-    input logic loadDataValid,
-    input logic executeMemoryIllegal,
     output logic [3:0] mcause,
-    input logic ebreak,
-    input logic ecall,
-    input logic memoryReadEnable,
-    input logic memoryWriteEnable,
+    output logic [31:0] mtval,
     input logic mretSignal,
     input logic [4:0] readAddress1,
     input logic [4:0] readAddress2,
-    input logic decodeCombIllegal,
     input logic fetchDecodeValid,
     input writebackType_ decodeExecuteWBType,
-    input logic [4:0] decodeExecuteDestinationRegister
+    input logic [4:0] decodeExecuteDestinationRegister,
+    input trapPayload_ trapData
 );
     // Trap Handler
     always_comb begin
@@ -43,53 +31,46 @@ module Hazard (
         memoryWritebackControl = '0;
         controlReset = 1'b0;
         mcause = '0;
+        mtval = 32'd0;
         if (!reset) begin
-            if (memoryWritebackValid && memoryWritebackIllegal) begin
-                // Misalignment from Memory Stage
+            if ((trapData.trapType != NONE) && memoryWritebackValid) begin
                 fetchDecodeControl.flush = 1'b1;
                 decodeExecuteControl.flush = 1'b1;
                 executeMemoryControl.flush = 1'b1;
                 memoryWritebackControl.flush = 1'b1;
                 controlReset = 1'b1;
-                if (memoryReadEnable) begin
-                    mcause = 4'h4;
-                end else if (memoryWriteEnable) begin
-                    mcause = 4'h6;
-                end
-            end else if (executeMemoryValid && executeMemoryIllegal) begin
-                // Branch Misalignment from Execute Stage
-                fetchDecodeControl.flush = 1'b1;
-                decodeExecuteControl.flush = 1'b1;
-                executeMemoryControl.flush = 1'b1;
-                memoryWritebackControl.flush = 1'b1;
-                controlReset = 1'b1;
-                mcause = 4'h0;
-            end else if (mretSignal) begin
-                fetchDecodeControl.flush = 1'b1;
-                decodeExecuteControl.flush = 1'b1;
-            end else if (decodeExecuteValid && decodeExecuteIllegal) begin
-                // Illegal Instruction from Decode Stage
-                fetchDecodeControl.flush = 1'b1;
-                decodeExecuteControl.flush = 1'b1;
-                executeMemoryControl.flush = 1'b1;
-                controlReset = 1'b1;
-                mcause = 4'h2;
-            end else if (decodeExecuteValid && ecall) begin
-                // ECALL
-                fetchDecodeControl.flush = 1'b1;
-                decodeExecuteControl.flush = 1'b1;
-                executeMemoryControl.flush = 1'b1;
-                controlReset = 1'b1;
-                mcause = 4'hB;
-            end else if (decodeExecuteValid && ebreak) begin
-                // EBREAK
-                fetchDecodeControl.flush = 1'b1;
-                decodeExecuteControl.flush = 1'b1;
-                executeMemoryControl.flush = 1'b1;
-                controlReset = 1'b1;
-                mcause = 4'h3;
-            end else if (branchValid) begin
-                // PC Redirect Flush
+                mtval = trapData.faultingAddress;
+                case (trapData.trapType)
+                    ILLEGAL: begin
+                        mcause = 4'h2;
+                    end
+                    MIS_STORE: begin
+                        mcause = 4'h6;
+                    end
+                    MIS_LOAD: begin
+                        mcause = 4'h4;
+                    end
+                    MIS_INST: begin
+                        mcause = 4'h0;
+                    end
+                    ECALL: begin
+                        mcause = 4'hB;
+                    end
+                    EBREAK: begin
+                        mcause = 4'h3;
+                    end
+                    ACCESS_STORE: begin
+                        mcause = 4'h7;
+                    end
+                    ACCESS_LOAD: begin
+                        mcause = 4'h5;
+                    end
+                    ACCESS_INST: begin
+                        mcause = 4'h1;
+                    end
+                    default: ;
+                endcase
+            end else if (mretSignal || branchValid) begin
                 fetchDecodeControl.flush = 1'b1;
                 decodeExecuteControl.flush = 1'b1;
             end
@@ -115,5 +96,6 @@ endmodule
 
 // Trap Handler will redirect to 0 by default unless set
 
-// mtvec needs nops. hardware always reads from the commited register
-// eventually change this and also mstatus
+// need to alter mstatus
+
+

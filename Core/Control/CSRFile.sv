@@ -15,7 +15,8 @@ module CSRFile (
     input logic [3:0] mcause,
     input logic [31:0] decodeExecutePC,
     input logic [31:0] executeMemoryPC,
-    input logic [31:0] memoryWritebackPC
+    input logic [31:0] memoryWritebackPC,
+    input logic [31:0] mtval
 );
     logic [31:0] csrs [0:15];
 
@@ -43,18 +44,14 @@ module CSRFile (
                 csrs[MINSTRET] <= csrs[MINSTRET] + 32'd1;
             end
             if (controlReset) begin
-                csrs[MTVAL] <= 32'd0;
+                csrs[MTVAL] <= mtval;
                 csrs[MCAUSE] <= {28'd0, mcause};
-                unique case (mcause)
-                    4'h6: csrs[MEPC] <= memoryWritebackPC;
-                    4'h4: csrs[MEPC] <= memoryWritebackPC;
-                    4'h0: csrs[MEPC] <= executeMemoryPC;
-                    4'h2: csrs[MEPC] <= decodeExecutePC;
-                    4'hB: csrs[MEPC] <= decodeExecutePC;
-                    4'h3: csrs[MEPC] <= decodeExecutePC;
-                endcase
-                $strobe("\n\nException: MEPC=%08h MCAUSE=%08h MTVEC=%08h", csrs[MEPC], csrs[MCAUSE], csrs[MTVEC],"\n");
+                csrs[MEPC] <= memoryWritebackPC;
+                $strobe("\n\nException: MEPC=%08h MCAUSE=%08h MTVEC=%08h MTVAL=%08h\n\n", csrs[MEPC], csrs[MCAUSE], csrs[MTVEC], csrs[MTVAL]);
             end
         end
     end
 endmodule
+
+// gonna have to redo the whole illegal system. pass a pending bit and effectuate
+// during wb.
