@@ -1,4 +1,5 @@
-import pack::*;
+import StaticPack::*;
+import ConfigPack::*;
 
 module Top (
     input logic clock,
@@ -163,7 +164,8 @@ module Top (
         .decodeExecutePC(decodeExecutePayload.programCounter),
         .executeMemoryPC(executeMemoryPayload.programCounter),
         .memoryWritebackPC(memoryWritebackPayload.programCounter),
-        .mtval(mtval)
+        .mtval(mtval),
+        .mretSignal(mretSignal)
     );
 
     BranchPredictor branchPredictor (
@@ -295,18 +297,17 @@ module Top (
         .trapData(trapData)
     );
 
-    Imem imem_inst (
-        .clock   (clock),
-        .reset   (reset),
-        .address (instructionAddress),    // from Fetch
-        .data    (instructionData),       // to Fetch
-        .valid   (instructionDataValid)   // to Fetch
-    );
-
-    Dmem dmem_inst (
+    MemExample mem_inst (
         .clock          (clock),
         .reset          (reset),
-        .address        (addressRegister),       // from Memory
+
+        // Instruction side (old Imem ports / your signal names)
+        .i_address      (instructionAddress),    // from Fetch
+        .i_data         (instructionData),       // to Fetch
+        .i_valid        (instructionDataValid),  // to Fetch
+
+        // Data side (old Dmem ports / your signal names)
+        .d_address      (addressRegister),       // from Memory
         .storeData      (storeData),             // from Memory
         .byteEnable     (realStoreByteEnable),   // from Memory
         .storeValid     (storeValid),            // from Memory

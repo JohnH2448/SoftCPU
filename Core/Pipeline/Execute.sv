@@ -1,4 +1,5 @@
-import pack::*;
+import StaticPack::*;
+import ConfigPack::*;
 
 module Execute (
     input logic clock,
@@ -32,9 +33,9 @@ module Execute (
     logic illegal;
     logic branchValid;
 
-    assign gatedBranchValid = branchValid && !illegal;
+    assign gatedBranchValid = branchValid && !illegal && (decodeExecutePayload.trapPayload.trapType == NONE);
 
-    always_comb begin /// YOU MUST DO MRET WITH isMRET
+    always_comb begin 
         illegal = 1'b0;
         branchValid = '0;
         destinationCSR = MSTATUS;

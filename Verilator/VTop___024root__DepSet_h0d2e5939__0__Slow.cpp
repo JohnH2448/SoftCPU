@@ -57,33 +57,20 @@ VL_ATTR_COLD void VTop___024root___eval_initial__TOP(VTop___024root* vlSelf) {
     VTop__Syms* const __restrict vlSymsp VL_ATTR_UNUSED = vlSelf->vlSymsp;
     VL_DEBUG_IF(VL_DBG_MSGF("+    VTop___024root___eval_initial__TOP\n"); );
     // Init
-    IData/*31:0*/ Top__DOT__imem_inst__DOT__unnamedblk1__DOT__i;
-    Top__DOT__imem_inst__DOT__unnamedblk1__DOT__i = 0;
-    IData/*31:0*/ Top__DOT__dmem_inst__DOT__unnamedblk1__DOT__i;
-    Top__DOT__dmem_inst__DOT__unnamedblk1__DOT__i = 0;
+    IData/*31:0*/ Top__DOT__mem_inst__DOT__unnamedblk1__DOT__i;
+    Top__DOT__mem_inst__DOT__unnamedblk1__DOT__i = 0;
     // Body
     vlSelf->Top__DOT__registerFile__DOT__registers[0U] = 0U;
-    Top__DOT__imem_inst__DOT__unnamedblk1__DOT__i = 0U;
-    while (VL_GTS_III(32, 0x4000U, Top__DOT__imem_inst__DOT__unnamedblk1__DOT__i)) {
-        vlSelf->Top__DOT__imem_inst__DOT__mem[(0x3fffU 
-                                               & Top__DOT__imem_inst__DOT__unnamedblk1__DOT__i)] = 0U;
-        Top__DOT__imem_inst__DOT__unnamedblk1__DOT__i 
-            = ((IData)(1U) + Top__DOT__imem_inst__DOT__unnamedblk1__DOT__i);
+    Top__DOT__mem_inst__DOT__unnamedblk1__DOT__i = 0U;
+    while (VL_GTS_III(32, 0x4000U, Top__DOT__mem_inst__DOT__unnamedblk1__DOT__i)) {
+        vlSelf->Top__DOT__mem_inst__DOT__mem[(0x3fffU 
+                                              & Top__DOT__mem_inst__DOT__unnamedblk1__DOT__i)] = 0U;
+        Top__DOT__mem_inst__DOT__unnamedblk1__DOT__i 
+            = ((IData)(1U) + Top__DOT__mem_inst__DOT__unnamedblk1__DOT__i);
     }
-    VL_WRITEF("IMEM: loading imem.hex\n");
-    VL_READMEM_N(true, 32, 16384, 0, std::string{"imem.hex"}
-                 ,  &(vlSelf->Top__DOT__imem_inst__DOT__mem)
-                 , 0, ~0ULL);
-    Top__DOT__dmem_inst__DOT__unnamedblk1__DOT__i = 0U;
-    while (VL_GTS_III(32, 0x4000U, Top__DOT__dmem_inst__DOT__unnamedblk1__DOT__i)) {
-        vlSelf->Top__DOT__dmem_inst__DOT__mem[(0x3fffU 
-                                               & Top__DOT__dmem_inst__DOT__unnamedblk1__DOT__i)] = 0x13U;
-        Top__DOT__dmem_inst__DOT__unnamedblk1__DOT__i 
-            = ((IData)(1U) + Top__DOT__dmem_inst__DOT__unnamedblk1__DOT__i);
-    }
-    VL_WRITEF("DMEM: loading dmem.hex\n");
-    VL_READMEM_N(true, 32, 16384, 0, std::string{"dmem.hex"}
-                 ,  &(vlSelf->Top__DOT__dmem_inst__DOT__mem)
+    VL_WRITEF("Loading mem.hex...\n");
+    VL_READMEM_N(true, 32, 16384, 0, std::string{"mem.hex"}
+                 ,  &(vlSelf->Top__DOT__mem_inst__DOT__mem)
                  , 0, ~0ULL);
 }
 
@@ -114,7 +101,7 @@ VL_ATTR_COLD void VTop___024root___eval_settle(VTop___024root* vlSelf) {
 #ifdef VL_DEBUG
             VTop___024root___dump_triggers__stl(vlSelf);
 #endif
-            VL_FATAL_MT("Core/Top.sv", 3, "", "Settle region did not converge.");
+            VL_FATAL_MT("Core/Top.sv", 4, "", "Settle region did not converge.");
         }
         __VstlIterCount = ((IData)(1U) + __VstlIterCount);
         __VstlContinue = 0U;
@@ -158,13 +145,13 @@ VL_ATTR_COLD void VTop___024root___stl_sequent__TOP__0(VTop___024root* vlSelf) {
     VL_DEBUG_IF(VL_DBG_MSGF("+    VTop___024root___stl_sequent__TOP__0\n"); );
     // Body
     vlSelf->dbg_IF_ID_programCounter = ((vlSelf->Top__DOT__fetchDecodePayload[2U] 
-                                         << 0x1fU) 
+                                         << 0x1bU) 
                                         | (vlSelf->Top__DOT__fetchDecodePayload[1U] 
-                                           >> 1U));
+                                           >> 5U));
     vlSelf->dbg_IF_ID_instruction = ((vlSelf->Top__DOT__fetchDecodePayload[3U] 
-                                      << 0x1fU) | (
+                                      << 0x1bU) | (
                                                    vlSelf->Top__DOT__fetchDecodePayload[2U] 
-                                                   >> 1U));
+                                                   >> 5U));
     vlSelf->dbg_ID_EX_programCounter = ((vlSelf->Top__DOT__decodeExecutePayload[7U] 
                                          << 0xbU) | 
                                         (vlSelf->Top__DOT__decodeExecutePayload[6U] 
@@ -442,7 +429,7 @@ VL_ATTR_COLD void VTop___024root___stl_sequent__TOP__0(VTop___024root* vlSelf) {
     if ((1U & (~ (IData)(vlSelf->reset)))) {
         if ((0U == (3U & vlSelf->dbg_pc))) {
             vlSelf->Top__DOT__instructionDataValid = 1U;
-            vlSelf->Top__DOT__instructionData = vlSelf->Top__DOT__imem_inst__DOT__mem
+            vlSelf->Top__DOT__instructionData = vlSelf->Top__DOT__mem_inst__DOT__mem
                 [(0x3fffU & (vlSelf->dbg_pc >> 2U))];
         }
         if (((0U != (0xfU & (vlSelf->Top__DOT__memoryWritebackPayload[2U] 
@@ -829,7 +816,7 @@ VL_ATTR_COLD void VTop___024root___ctor_var_reset(VTop___024root* vlSelf) {
     vlSelf->Top__DOT__readData1 = VL_RAND_RESET_I(32);
     vlSelf->Top__DOT__readData2 = VL_RAND_RESET_I(32);
     vlSelf->Top__DOT__csrReadData = VL_RAND_RESET_I(32);
-    VL_RAND_RESET_W(97, vlSelf->Top__DOT__fetchDecodePayload);
+    VL_RAND_RESET_W(101, vlSelf->Top__DOT__fetchDecodePayload);
     VL_RAND_RESET_W(245, vlSelf->Top__DOT__decodeExecutePayload);
     vlSelf->Top__DOT__readAddress1 = VL_RAND_RESET_I(5);
     vlSelf->Top__DOT__readAddress2 = VL_RAND_RESET_I(5);
@@ -865,18 +852,16 @@ VL_ATTR_COLD void VTop___024root___ctor_var_reset(VTop___024root* vlSelf) {
     vlSelf->Top__DOT__execute__DOT__illegal = VL_RAND_RESET_I(1);
     vlSelf->Top__DOT__execute__DOT__branchValid = VL_RAND_RESET_I(1);
     vlSelf->Top__DOT__memory__DOT__illegal = VL_RAND_RESET_I(1);
+    vlSelf->Top__DOT__memory__DOT__accessFault = VL_RAND_RESET_I(1);
     vlSelf->Top__DOT__memory__DOT__storeReq = VL_RAND_RESET_I(1);
     vlSelf->Top__DOT__memory__DOT__unnamedblk1__DOT__word = VL_RAND_RESET_I(32);
     vlSelf->Top__DOT__memory__DOT__unnamedblk1__DOT__b = VL_RAND_RESET_I(8);
     vlSelf->Top__DOT__memory__DOT__unnamedblk1__DOT__h = VL_RAND_RESET_I(16);
     for (int __Vi0 = 0; __Vi0 < 16384; ++__Vi0) {
-        vlSelf->Top__DOT__imem_inst__DOT__mem[__Vi0] = VL_RAND_RESET_I(32);
+        vlSelf->Top__DOT__mem_inst__DOT__mem[__Vi0] = VL_RAND_RESET_I(32);
     }
-    for (int __Vi0 = 0; __Vi0 < 16384; ++__Vi0) {
-        vlSelf->Top__DOT__dmem_inst__DOT__mem[__Vi0] = VL_RAND_RESET_I(32);
-    }
-    vlSelf->Top__DOT__dmem_inst__DOT__storeValid_q = VL_RAND_RESET_I(1);
-    vlSelf->Top__DOT__dmem_inst__DOT__unnamedblk2__DOT__word = VL_RAND_RESET_I(32);
+    vlSelf->Top__DOT__mem_inst__DOT__storeValid_q = VL_RAND_RESET_I(1);
+    vlSelf->Top__DOT__mem_inst__DOT__unnamedblk2__DOT__word = VL_RAND_RESET_I(32);
     vlSelf->__Vtrigprevexpr___TOP__Top__DOT__readCSR__0 = VL_RAND_RESET_I(4);
     vlSelf->__Vtrigprevexpr___TOP__Top__DOT__readAddress1__0 = VL_RAND_RESET_I(5);
     vlSelf->__Vtrigprevexpr___TOP__Top__DOT__readAddress2__0 = VL_RAND_RESET_I(5);

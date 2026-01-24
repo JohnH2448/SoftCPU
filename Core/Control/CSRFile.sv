@@ -1,4 +1,5 @@
-import pack::*;
+import StaticPack::*;
+import ConfigPack::*;
 
 module CSRFile (
     input logic clock,
@@ -16,7 +17,8 @@ module CSRFile (
     input logic [31:0] decodeExecutePC,
     input logic [31:0] executeMemoryPC,
     input logic [31:0] memoryWritebackPC,
-    input logic [31:0] mtval
+    input logic [31:0] mtval,
+    input logic mretSignal
 );
     logic [31:0] csrs [0:15];
 
@@ -47,7 +49,12 @@ module CSRFile (
                 csrs[MTVAL] <= mtval;
                 csrs[MCAUSE] <= {28'd0, mcause};
                 csrs[MEPC] <= memoryWritebackPC;
+                csrs[MSTATUS][7] <= csrs[MSTATUS][3]; // MPIE <= MIE
+                csrs[MSTATUS][3] <= 1'b0; // MIE <= 0
                 $strobe("\n\nException: MEPC=%08h MCAUSE=%08h MTVEC=%08h MTVAL=%08h\n\n", csrs[MEPC], csrs[MCAUSE], csrs[MTVEC], csrs[MTVAL]);
+            end else if (mretSignal) begin
+                csrs[MSTATUS][3] <= csrs[MSTATUS][7]; // MIE <= MPIE
+                csrs[MSTATUS][7] <= 1'b1; // MPIE <= 1
             end
         end
     end

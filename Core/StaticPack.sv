@@ -1,7 +1,4 @@
-// import pack::*;
-package pack;
-
-  parameter logic [31:0] resetVector = 32'h80000000;
+package StaticPack;
 
   typedef enum logic [2:0] {
     BR_NONE = 3'd0,
@@ -61,13 +58,6 @@ package pack;
   } aluSource_;
 
   typedef struct packed {
-    logic [31:0] instruction;
-    logic [31:0] programCounter;
-    logic [31:0] programCounterPlus4;
-    logic valid;
-  } fetchDecodePayload_;
-
-  typedef struct packed {
     logic stall;
     logic flush;
   } control;
@@ -109,6 +99,14 @@ package pack;
     ACCESS_LOAD = 4'b1000, // not implemented yet
     ACCESS_INST = 4'b1001 // not implemented yet
   } trapType_;
+  
+  typedef struct packed {
+    logic [31:0] instruction;
+    logic [31:0] programCounter;
+    logic [31:0] programCounterPlus4;
+    trapType_ trapType;
+    logic valid;
+  } fetchDecodePayload_;
 
   typedef struct packed {
     trapType_ trapType;

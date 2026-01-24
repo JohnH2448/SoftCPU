@@ -3,3 +3,4 @@ riscv-tests/
 .vscode/
 riscv-arch-test/
 .venv/
+sail-riscv/

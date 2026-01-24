@@ -1,4 +1,5 @@
-import pack::*;
+import StaticPack::*;
+import ConfigPack::*;
 
 module Writeback (
     input logic clock,

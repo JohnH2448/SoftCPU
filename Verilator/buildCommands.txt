@@ -1,4 +1,4 @@
-verilator -Wall -Wno-fatal --cc Core/pack.sv Core/Top.sv Core/Control/*.sv Core/Pipeline/*.sv Core/Interface/*.sv \
+verilator -Wall -Wno-fatal --cc Core/StaticPack.sv Core/ConfigPack.sv Core/Top.sv Core/Control/*.sv Core/Pipeline/*.sv Core/Interface/*.sv \
   --top-module Top --exe sim_main.cpp \
   --Mdir Verilator
 

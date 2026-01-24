@@ -54,9 +54,10 @@ class alignas(VL_CACHE_LINE_BYTES) VTop___024root final : public VerilatedModule
         CData/*0:0*/ Top__DOT__execute__DOT__illegal;
         CData/*0:0*/ Top__DOT__execute__DOT__branchValid;
         CData/*0:0*/ Top__DOT__memory__DOT__illegal;
+        CData/*0:0*/ Top__DOT__memory__DOT__accessFault;
         CData/*0:0*/ Top__DOT__memory__DOT__storeReq;
         CData/*7:0*/ Top__DOT__memory__DOT__unnamedblk1__DOT__b;
-        CData/*0:0*/ Top__DOT__dmem_inst__DOT__storeValid_q;
+        CData/*0:0*/ Top__DOT__mem_inst__DOT__storeValid_q;
         CData/*3:0*/ __Vtrigprevexpr___TOP__Top__DOT__readCSR__0;
         CData/*4:0*/ __Vtrigprevexpr___TOP__Top__DOT__readAddress1__0;
         CData/*4:0*/ __Vtrigprevexpr___TOP__Top__DOT__readAddress2__0;
@@ -79,9 +80,9 @@ class alignas(VL_CACHE_LINE_BYTES) VTop___024root final : public VerilatedModule
         VL_OUT(dbg_IF_ID_instruction,31,0);
         VL_OUT(dbg_ID_EX_programCounter,31,0);
         VL_OUT(dbg_EX_MEM_programCounter,31,0);
-        VL_OUT(dbg_MEM_WB_programCounter,31,0);
     };
     struct {
+        VL_OUT(dbg_MEM_WB_programCounter,31,0);
         VL_OUT(dbg_IMEM_data,31,0);
         VL_OUT(dbg_pc,31,0);
         VL_OUT(dbg_wb_value,31,0);
@@ -101,17 +102,16 @@ class alignas(VL_CACHE_LINE_BYTES) VTop___024root final : public VerilatedModule
         IData/*31:0*/ Top__DOT__execute__DOT__result;
         IData/*31:0*/ Top__DOT__execute__DOT__forwardCorrectedCSRReadData;
         IData/*31:0*/ Top__DOT__memory__DOT__unnamedblk1__DOT__word;
-        IData/*31:0*/ Top__DOT__dmem_inst__DOT__unnamedblk2__DOT__word;
+        IData/*31:0*/ Top__DOT__mem_inst__DOT__unnamedblk2__DOT__word;
         IData/*31:0*/ __VactIterCount;
-        VlWide<4>/*96:0*/ Top__DOT__fetchDecodePayload;
+        VlWide<4>/*100:0*/ Top__DOT__fetchDecodePayload;
         VlWide<8>/*244:0*/ Top__DOT__decodeExecutePayload;
         VlWide<7>/*216:0*/ Top__DOT__executeMemoryPayload;
         VlWide<5>/*145:0*/ Top__DOT__memoryWritebackPayload;
         VlWide<8>/*244:0*/ Top__DOT__decode__DOT__decodeExecuteCandidate;
         VlUnpacked<IData/*31:0*/, 16> Top__DOT__csrFile__DOT__csrs;
         VlUnpacked<IData/*31:0*/, 32> Top__DOT__registerFile__DOT__registers;
-        VlUnpacked<IData/*31:0*/, 16384> Top__DOT__imem_inst__DOT__mem;
-        VlUnpacked<IData/*31:0*/, 16384> Top__DOT__dmem_inst__DOT__mem;
+        VlUnpacked<IData/*31:0*/, 16384> Top__DOT__mem_inst__DOT__mem;
     };
     VlTriggerVec<5> __VstlTriggered;
     VlTriggerVec<2> __VicoTriggered;

@@ -1,4 +1,5 @@
-import pack::*;
+import StaticPack::*;
+import ConfigPack::*;
 
 module Fetch (
     input logic clock,
@@ -49,6 +50,11 @@ module Fetch (
                 fetchDecodePayload.instruction <= instructionData;
                 fetchDecodePayload.programCounter <= programCounter;
                 fetchDecodePayload.programCounterPlus4 <= programCounter + 32'd4;
+                if (programCounter > (memoryBytes - 32'd3)) begin
+                    fetchDecodePayload.trapType <= ACCESS_INST;
+                end else begin
+                    fetchDecodePayload.trapType <= NONE;
+                end
             end else if (!fetchDecodeControl.stall && !instructionDataValid) begin
                 fetchDecodePayload.valid <= 1'b0;
             end
@@ -56,7 +62,6 @@ module Fetch (
             fetchDecodePayload <= '0;
         end
     end
-
 endmodule
 
 // CONTROL FLUSH OVERWRITES BOUNDRY REG UNIVERSALLY

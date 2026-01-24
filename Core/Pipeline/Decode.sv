@@ -1,4 +1,5 @@
-import pack::*;
+import StaticPack::*;
+import ConfigPack::*;
 
 module Decode (
     input logic clock,
@@ -281,7 +282,17 @@ module Decode (
         end else if (decodeExecuteControl.flush) begin
             decodeExecutePayload.valid <= 1'b0;
         end else if (!decodeExecuteControl.stall) begin
-            if ((decodeExecuteCandidate.trapPayload.trapType != NONE) && fetchDecodePayload.valid) begin
+            if ((fetchDecodePayload.trapType == ACCESS_INST) && fetchDecodePayload.valid) begin
+                decodeExecutePayload <= decodeExecuteCandidate;
+                decodeExecutePayload.destinationRegister <= 5'd0;
+                decodeExecutePayload.writebackType <= WB_NONE;
+                decodeExecutePayload.memoryReadEnable <= 1'b0;
+                decodeExecutePayload.memoryWriteEnable <= 1'b0;
+                decodeExecutePayload.decodeExecuteCSR.CSROp <= CSR_NONE;
+                decodeExecutePayload.valid <= fetchDecodePayload.valid;
+                decodeExecutePayload.trapPayload.trapType <= ACCESS_INST;
+                decodeExecutePayload.trapPayload.faultingAddress <= fetchDecodePayload.programCounter;
+            end else if ((decodeExecuteCandidate.trapPayload.trapType != NONE) && fetchDecodePayload.valid) begin
                 decodeExecutePayload <= decodeExecuteCandidate;
                 decodeExecutePayload.destinationRegister <= 5'd0;
                 decodeExecutePayload.writebackType <= WB_NONE;
@@ -292,9 +303,11 @@ module Decode (
                 if (decodeExecuteCandidate.trapPayload.trapType == ILLEGAL) begin
                     decodeExecutePayload.trapPayload.faultingAddress <= fetchDecodePayload.instruction;
                 end
-            end else begin
+            end else if (fetchDecodePayload.valid) begin
                 decodeExecutePayload <= decodeExecuteCandidate;
                 decodeExecutePayload.valid <= fetchDecodePayload.valid;
+            end else begin
+                decodeExecutePayload <= '0;
             end
         end
     end

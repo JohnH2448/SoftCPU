@@ -1,4 +1,5 @@
-import pack::*;
+import StaticPack::*;
+import ConfigPack::*;
 
 module Memory (
     input logic clock,
@@ -18,48 +19,77 @@ module Memory (
 );
 
     logic illegal;
+    logic accessFault;
     logic storeConfirm;
     logic storeReq;
     logic [4:0] shamt;
     logic [3:0] storeByteEnable;
+    logic [31:0] limit;
 
     assign shamt = {addressRegister[1:0], 3'b000};
     assign storeData = executeMemoryPayload.storeData << shamt;
 
     assign storeReq = storeConfirm && !storeValid;
-    assign stallControl = (executeMemoryPayload.valid && executeMemoryPayload.memoryReadEnable && !illegal && !memoryWritebackControl.flush) ? !loadDataValid : (storeReq || (storeValid && !storeComplete));
+    assign stallControl = (executeMemoryPayload.valid && executeMemoryPayload.memoryReadEnable && !illegal && !accessFault && !memoryWritebackControl.flush) ? !loadDataValid : (storeReq || (storeValid && !storeComplete));
     assign addressRegister = executeMemoryPayload.result;
     assign realStoreByteEnable = storeByteEnable << addressRegister[1:0];
 
     always_comb begin
+        accessFault = 1'b0;
         illegal = 1'b0;
         storeConfirm = 1'b0;
         storeByteEnable = 4'b0000;
+        unique case (executeMemoryPayload.memoryWidth) // fake hardware
+            2'b00: limit = memoryBytes - 32'd1;
+            2'b01: limit = memoryBytes - 32'd2;
+            2'b11: limit = memoryBytes - 32'd4;
+            default: limit = 32'd0; 
+        endcase
         if (executeMemoryPayload.valid && !memoryWritebackControl.flush && (executeMemoryPayload.trapPayload.trapType == NONE)) begin
             if (executeMemoryPayload.memoryReadEnable) begin
                 unique case (executeMemoryPayload.memoryWidth)
-                    2'b00: begin end
+                    2'b00: begin 
+                        if (addressRegister > limit) begin
+                            accessFault = 1'b1;
+                        end
+                    end
                     2'b01: begin 
-                        if (addressRegister[0] != 1'b0) begin
+                        if (addressRegister > limit) begin
+                            accessFault = 1'b1;
+                        end else if (addressRegister[0] != 1'b0) begin
                             illegal = 1'b1;
                         end
                     end
                     2'b11: begin 
-                        if (addressRegister[1:0] != 2'b00) begin
+                        if (addressRegister > limit) begin
+                            accessFault = 1'b1;
+                        end else if (addressRegister[1:0] != 2'b00) begin
                             illegal = 1'b1;
                         end
                     end
-                    default: illegal = 1'b1;
+                    default: begin
+                        if (addressRegister > limit) begin
+                            accessFault = 1'b1;
+                        end else begin
+                            illegal = 1'b1;
+                        end
+                    end
                 endcase
             end
             if (executeMemoryPayload.memoryWriteEnable) begin
                 unique case (executeMemoryPayload.memoryWidth)
-                    2'b00: begin 
-                        storeConfirm = 1'b1; 
-                        storeByteEnable = 4'b0001;
+                    2'b00: begin
+                        if (addressRegister > limit) begin
+                            accessFault = 1'b1;
+                        end else begin 
+                            storeConfirm = 1'b1; 
+                            storeByteEnable = 4'b0001;
+                        end
                     end
                     2'b01: begin 
-                        if (addressRegister[0] != 1'b0) begin
+                        if (addressRegister > limit) begin
+                            accessFault = 1'b1;
+                        end else if (addressRegister[0] != 1'b0) begin
                             illegal = 1'b1;
                         end else begin
                             storeConfirm = 1'b1;
@@ -67,14 +97,22 @@ module Memory (
                         end
                     end
                     2'b11: begin 
-                        if (addressRegister[1:0] != 2'b00) begin 
+                        if (addressRegister > limit) begin
+                            accessFault = 1'b1;
+                        end else if (addressRegister[1:0] != 2'b00) begin 
                             illegal = 1'b1;
                         end else begin
                             storeConfirm = 1'b1;
                             storeByteEnable = 4'b1111;
                         end
                     end
-                    default: illegal = 1'b1;
+                    default: begin
+                        if (addressRegister > limit) begin
+                            accessFault = 1'b1;
+                        end else begin
+                            illegal = 1'b1;
+                        end
+                    end
                 endcase
             end
         end
@@ -83,7 +121,7 @@ module Memory (
     always_ff @(posedge clock) begin
         if (reset) begin
             storeValid <= 1'b0;
-        end else if (!storeValid && !illegal && !memoryWritebackControl.flush) begin
+        end else if (!storeValid && !illegal && !accessFault && !memoryWritebackControl.flush) begin
             storeValid <= storeReq;
         end else if (storeComplete) begin
             storeValid <= 1'b0;
@@ -126,7 +164,6 @@ module Memory (
                             end
                             default: ;
                         endcase
-                        $display("\n\nLoaded %08h at address %08h", word, addressRegister, "\n\n");
                     end
                     memoryWritebackPayload.writebackEnable <= executeMemoryPayload.memoryReadEnable && loadDataValid;
                 end
@@ -147,7 +184,17 @@ module Memory (
                 memoryWritebackPayload.data <= executeMemoryPayload.result;
             end
             memoryWritebackPayload.trapPayload <= executeMemoryPayload.trapPayload;
-            if (illegal && executeMemoryPayload.valid) begin
+            if (accessFault && executeMemoryPayload.valid) begin
+                if (executeMemoryPayload.trapPayload.trapType == NONE) begin
+                    if (executeMemoryPayload.memoryWriteEnable) begin
+                        memoryWritebackPayload.trapPayload.trapType <= ACCESS_STORE;
+                        memoryWritebackPayload.trapPayload.faultingAddress <= addressRegister;
+                    end else if (executeMemoryPayload.memoryReadEnable) begin
+                        memoryWritebackPayload.trapPayload.trapType <= ACCESS_LOAD;
+                        memoryWritebackPayload.trapPayload.faultingAddress <= addressRegister;
+                    end
+                end
+            end else if (illegal && executeMemoryPayload.valid) begin
                 if (executeMemoryPayload.trapPayload.trapType == NONE) begin
                     if (executeMemoryPayload.memoryWriteEnable) begin
                         memoryWritebackPayload.trapPayload.trapType <= MIS_STORE;

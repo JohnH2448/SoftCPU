@@ -20,7 +20,7 @@ int main(int argc, char **argv) {
 
     // run
     int count = 0;
-    for (int i = 1; i < 5000; i++) {
+    for (int i = 1; i < 120; i++) {
         top.clock = 0; top.eval();
         top.clock = 1; top.eval();
         printf("\n\n");

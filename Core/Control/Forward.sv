@@ -1,4 +1,5 @@
-import pack::*;
+import StaticPack::*;
+import ConfigPack::*;
 
 module Forward (
     input logic [4:0] decodeExecuteRegister1,
