@@ -26,3 +26,88 @@
 
 Pipeline Diagram: 
 
+# SoftCPU RTL Structure
+
+```mermaid
+%%{init: {"flowchart": {"curve": "stepAfter", "nodeSpacing": 10, "rankSpacing": 40}}}%%
+flowchart LR
+    %% Styles
+    classDef plain fill:#fff,stroke:#000,stroke-width:2px;
+    classDef input fill:#eee,stroke:#000,stroke-dasharray: 5 5;
+    
+    %% Inputs
+    Clock[Clock]:::input
+    Reset[Reset]:::input
+    Interrupt[Interrupt]:::input
+
+    %% Main Structure
+    subgraph Core
+        direction LR
+        
+        %% Pipeline Stages
+        Fetch[Fetch Stage]:::plain
+        Decode[Decode Stage]:::plain
+        Execute[Execute Stage]:::plain
+        Memory[Memory Stage]:::plain
+        Writeback[Writeback Stage]:::plain
+        
+        %% Storage & Control
+        RegFile[[Register File]]:::plain
+        CSRFile[[CSR File]]:::plain
+        BranchPred([Branch Predictor]):::plain
+        Hazard{Hazard Unit}:::plain
+        Forward{Forwarding}:::plain
+
+        %% Pipeline Flow
+        Fetch --> Decode
+        Decode --> Execute
+        Execute --> Memory
+        Memory --> Writeback
+
+        %% Fetch Interactions
+        Clock & Reset & Interrupt --> Fetch
+        BranchPred --> Fetch
+        Execute -- Branch Info --> Fetch
+        Hazard -- Stall/Flush --> Fetch
+
+        %% Decode Interactions
+        Fetch --> Hazard
+        Decode -- Control --> Hazard
+        Decode <--> RegFile
+        Hazard -- Stall/Flush --> Decode
+
+        %% Execute Interactions
+        Decode --> Execute
+        Execute -- Control --> Hazard
+        Execute -- Data --> Forward
+        Execute --> BranchPred
+        Forward --> Execute
+        Hazard -- Stall/Flush --> Execute
+
+        %% Memory Interactions
+        Execute --> Memory
+        Memory -- Control --> Hazard
+        Memory -- Data --> Forward
+        Hazard -- Stall/Flush --> Memory
+
+        %% Writeback Interactions
+        Memory --> Writeback
+        Writeback --> RegFile
+        Writeback --> TopCSR[Wrapper/CSR]
+        Writeback --> Forward
+        
+        %% Side Units
+        CSRFile <--> TopCSR 
+        
+        %% Mem wrapper visualization
+        subgraph MemInterface [.]
+            direction TB
+            DMem[Memory]
+        end
+        
+        Fetch <--> DMem
+        Memory <--> DMem
+    end
+```
+
+
