@@ -7,6 +7,35 @@
 - Decoupled Memory For External RAM
 - Hardwired M-Mode Execution
 
+## Simulator
+This SystemVerilog core comes with a corresponding simulator to more easily observe and test behavior. The simulation tool used is Verilator, which compiles HDL to native binaries. Verilator takes two input catagories, HDL and a C++ test harness. The simulator included here is already compiled with a fixed test harness. To run the simulator with the default test harness, execute the command below from the repository root:
+```bash
+# Executes the simulator
+./Verilator/VTop
+```
+
+For non-trivial debugging, a custom test harness may be necessary. To create a custom test harness and rebuild the simulator, you must have the Verilator CLI tool installed. From there, create a new file in the repository root named sim_main.cpp. Refer to the Verilator documentation for guidance on writing a custom C++ test harness tailored to your specific needs. Once the file is complete, run the following commands:
+```bash
+# Version
+Verilator 5.020 2024-01-01 rev (Debian 5.020-1)
+
+# Produces a C program that simulates HDL
+verilator -Wall -Wno-fatal --cc \
+  Core/StaticPack.sv Core/ConfigPack.sv Core/Top.sv Core/Control/*.sv \
+  Core/Pipeline/*.sv Core/Interface/*.sv \
+  --top-module Top --exe sim_main.cpp \
+  --Mdir Verilator
+
+# Compiles the C program to an executable
+export PATH=/usr/bin:/bin:$PATH
+hash -r
+make -C Verilator -f VTop.mk -j"$(nproc)"
+
+# Executes the simulation
+./Verilator/VTop
+```
+Any changes to the HDL require a full rebuild of both the C program and the executable. For edits to the test harness alone, only rebuilding the executable is necessary. Print statements may also exist in the outsude of the test harness, and could hinder directed testing. Ensure all $display and $strobe commands inside the HDL are removed if a blank slate simulation is required. 
+
 ## Supported CSR Reference Table
 | CSR       | ACCESS | NOTES                                 |
 |-----------|--------|---------------------------------------|
