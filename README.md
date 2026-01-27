@@ -40,6 +40,12 @@ make -C Verilator -f VTop.mk -j"$(nproc)"
 ```
 Any changes to the HDL require a full rebuild of both the C program and the executable. For edits to the test harness alone, only rebuilding the executable is necessary. Print statements may also exist in the outsude of the test harness, and could hinder directed testing. Ensure all $display and $strobe commands inside the HDL are removed if a blank slate simulation is required. 
 
+## Memory
+VenomCPU supports decouplable memory, so the core is compatable with any arbitrary RAM that meets the handshake spec. The LUTRAM (or BRAM) written in SystemVerilog in the Core/ directory exists for bringup, but may be configured or replaced. To add or subtract how many RAM cells are built with the default memory, edit the parameter memoryWords in ConfigPack.sv. It is reccomended you keep it to a power of two to prevent non-existent addressing.
+
+If you choose to sub out the RAM, it may be necessary to build an HDL harness to meet the handsake protocol. This protocol is defined in a .txt file contained in the Core/Interface/ directory, and must be met for valid memory interaction. The CPU is deterministic and will follow the protocol, but it makes setup and hold assumptions. For async memory, or memory in a seperate clock domain, it is necessary to accomidate for these assumptions and metastability issues in the harness.
+
+
 ## Supported CSR Reference Table
 | CSR       | ACCESS | NOTES                                 |
 |-----------|--------|---------------------------------------|
