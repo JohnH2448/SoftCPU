@@ -1,5 +1,9 @@
 # VenomCPU
-## Overview
+
+## Introduction
+VenomCPU is a RISC-V CPU core implementing the RV32I base ISA with Zicsr support, verified using the RISC-V Compatibility Framework (RISCOF). The core is provided as synthesizable SystemVerilog, and can be used in FPGA, as a reference implementation, a research and learning platform, or as a foundation for custom RISC-V system designs.
+
+## Features
 
 - RISC-V RV32I Zicsr ISA
 - In-Order 5-Stage Pipeline
