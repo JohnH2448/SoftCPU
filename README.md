@@ -11,6 +11,13 @@ VenomCPU is a RISC-V CPU core implementing the RV32I base ISA with Zicsr support
 - Decoupled Memory Interface for External RAM
 - Hardwired M-Mode Execution
 
+## Quickstart
+All synthesizable SystemVerilog RTL for VenomCPU is contained in the `Core/` directory. To integrate the core, first clone the repository:
+```bash
+git clone https://github.com/JohnH2448/VenomCPU
+```
+The contents of `Core/` are fully self-contained and may be directly imported into FPGA or ASIC build flows. Other directories (simulation and verification artifacts) are not required for hardware integration. `Top.sv` is the hierarchical top-level module and serves as the compilation entry point for the core.
+
 ## Simulator
 This SystemVerilog core comes with a corresponding simulator to more easily observe and test behavior. The simulation tool used is Verilator, which compiles HDL to native binaries. Verilator takes two input categories, HDL and a C++ test harness. The simulator included here is already compiled with a fixed test harness. To run the simulator with the default test harness, execute the command below from the repository root:
 ```bash
