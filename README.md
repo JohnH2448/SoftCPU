@@ -48,11 +48,14 @@ If desired, the CPU can run entirely on user mode so long as an exception causin
 In simulation, the CPU initializes programs by reading `mem.hex` directly into RAM. This happens before any execution and is automatic. To run programs, compile them to `.hex` and paste them into the specified file. The first hex word is loaded into address 32'd0, the next into 32'd4, etc. For physical hardware implementations, whatever memory system feeds the PC will serve this role. The PC will grab the first word at the `resetVector` and begin stepping through instructions. Programs must be initialized via JTAG, flash, or some other similar method.
 
 ## Memory
+
+(Be careful with this, as deviating from default memory has not been fully verified as of yet. This is near on the to-do list.)
+
 VenomCPU uses a decoupled memory interface, allowing the core to operate with any external RAM implementation that conforms to the defined handshake protocol. The included LUTRAM/BRAM implementation in the `Core/` directory is intended for initial bring-up and simulation, but can be modified or replaced as needed.
 
 The size of the default memory can be configured by adjusting the `memoryBytes` parameter in `ConfigPack.sv`. It is recommended to use a word-aligned, power-of-two depth depth to avoid invalid or unmapped address ranges.
 
-If you choose to replace the default memory implementation, you may need to create a custom HDL memory harness that satisfies the required handshake behavior. The full protocol specification is provided in `Core/Interface/`. (Be careful with this, as the handshake protocol deviating from the cycle arangement in the default memory has not been fully verified as of yet. This is near on the to-do list.)
+If you choose to replace the default memory implementation, you may need to create a custom HDL memory harness that satisfies the required handshake behavior. The full protocol specification is provided in `Core/Interface/`. 
 
 VenomCPU guarantees deterministic behavior and will strictly adhere to this interface contract. However, the core assumes standard synchronous setup and hold timing. When interfacing with asynchronous memory or memory operating in a separate clock domain, additional synchronization logic **must be implemented** in the harness to handle clock domain crossing and prevent metastability.
 
